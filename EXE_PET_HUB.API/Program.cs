@@ -20,14 +20,12 @@ namespace EXE_PET_HUB.API
             // Add services to the container.
             builder.Services.AddControllers();
 
-            //Add DbContext
+            //Add DbContext SQL
+            //builder.Services.AddDbContext<AppDbContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //Add DBContext PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            //để này cho tiện, mốt đổi lại cái trên
-            // builder.Services.AddDbContext<AppDbContext>(options =>
-            //     options.UseSqlServer(
-            //         builder.Configuration.GetConnectionString("DefaultConnection"),
-            //         b => b.MigrationsAssembly("EXE_PET_HUB.API")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             //Add Identity services
             builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -61,9 +59,11 @@ namespace EXE_PET_HUB.API
             app.MapControllers();
 
             //environment variable for port, default to 8080 if not set
-             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Run($"http://0.0.0.0:{port}");
-            //app.Run();
+            // var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            //app.Run($"http://0.0.0.0:{port}");
+
+            //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
+            app.Run();
         }
     }
 }
