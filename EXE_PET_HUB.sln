@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXE_PET_HUB.API", "EXE_PET_HUB.API\EXE_PET_HUB.API.csproj", "{DCCC317A-75DB-4558-8747-A88D797CB9C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXE_PET_HUB.Application", "EXE_PET_HUB.Application\EXE_PET_HUB.Application.csproj", "{BF7CC686-3977-4ED2-AFEB-E32DE9BB4295}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXE_PET_HUB.Domain", "EXE_PET_HUB.Domain\EXE_PET_HUB.Domain.csproj", "{A5F6BFC4-2967-43AC-AD6A-52E337B91B65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXE_PET_HUB.Infrastructure", "EXE_PET_HUB.Infrastructure\EXE_PET_HUB.Infrastructure.csproj", "{67AEB817-2E78-4423-8738-653320C20A74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCCC317A-75DB-4558-8747-A88D797CB9C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCCC317A-75DB-4558-8747-A88D797CB9C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCCC317A-75DB-4558-8747-A88D797CB9C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCCC317A-75DB-4558-8747-A88D797CB9C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF7CC686-3977-4ED2-AFEB-E32DE9BB4295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF7CC686-3977-4ED2-AFEB-E32DE9BB4295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF7CC686-3977-4ED2-AFEB-E32DE9BB4295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF7CC686-3977-4ED2-AFEB-E32DE9BB4295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5F6BFC4-2967-43AC-AD6A-52E337B91B65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5F6BFC4-2967-43AC-AD6A-52E337B91B65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5F6BFC4-2967-43AC-AD6A-52E337B91B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5F6BFC4-2967-43AC-AD6A-52E337B91B65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67AEB817-2E78-4423-8738-653320C20A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67AEB817-2E78-4423-8738-653320C20A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67AEB817-2E78-4423-8738-653320C20A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67AEB817-2E78-4423-8738-653320C20A74}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A73FAF7-2A20-4C79-944A-D5E3B023E371}
+	EndGlobalSection
+EndGlobal
