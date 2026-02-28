@@ -21,5 +21,6 @@ namespace EXE_PET_HUB.API.Controllers
             var pets = await _petRepository.GetAllAsync();
             return Ok(pets);
         }
+
     }
 }

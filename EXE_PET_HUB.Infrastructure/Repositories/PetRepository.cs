@@ -1,37 +1,43 @@
-﻿
-using EXE_PET_HUB.Application.Interfaces;
+﻿using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
+using EXE_PET_HUB.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
     public class PetRepository : IPetRepository
     {
-        private static List<Pet> _pets = new();
+        private readonly AppDbContext _context;
 
-        public Task<List<Pet>> GetAllAsync()
+        public PetRepository(AppDbContext context)
         {
-            return Task.FromResult(_pets);
+            _context = context;
         }
 
-        public Task<Pet> GetByIdAsync(int id)
+        public async Task<List<Pet>> GetAllAsync()
         {
-            var pet = _pets.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult(pet);
+            return await _context.Pets.ToListAsync();
         }
 
-        public Task AddAsync(Pet pet)
+        public async Task<Pet?> GetByIdAsync(int id)
         {
-            _pets.Add(pet);
-            return Task.CompletedTask;
+            return await _context.Pets.FindAsync(id);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task AddAsync(Pet pet)
         {
-            var pet = _pets.FirstOrDefault(x => x.Id == id);
+            _context.Pets.Add(pet);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var pet = await _context.Pets.FindAsync(id);
             if (pet != null)
-                _pets.Remove(pet);
-
-            return Task.CompletedTask;
+            {
+                _context.Pets.Remove(pet);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
