@@ -61,9 +61,9 @@ namespace EXE_PET_HUB.API
             app.MapControllers();
 
             //environment variable for port, default to 8080 if not set
-            // var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            // app.Run($"http://0.0.0.0:{port}");
-            app.Run();
+             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            app.Run($"http://0.0.0.0:{port}");
+            //app.Run();
         }
     }
 }
