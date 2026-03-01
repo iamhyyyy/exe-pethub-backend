@@ -13,5 +13,9 @@ namespace EXE_PET_HUB.Infrastructure.Settings
         public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
+        
+        // SendGrid API (dùng cho deploy, tránh bị block SMTP)
+        public string? SendGridApiKey { get; set; }
+        public string? SendGridFromEmail { get; set; }
     }
 }
