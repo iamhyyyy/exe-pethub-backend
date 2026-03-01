@@ -3,6 +3,8 @@ using EXE_PET_HUB.Application.Services;
 using EXE_PET_HUB.Infrastructure.Data;
 using EXE_PET_HUB.Infrastructure.Identity;
 using EXE_PET_HUB.Infrastructure.Repositories;
+using EXE_PET_HUB.Infrastructure.Services;
+using EXE_PET_HUB.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +16,14 @@ namespace EXE_PET_HUB.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddScoped<IPetRepository, PetRepository>();
+            // Configure email settings
+            builder.Services.Configure<EmailSettings>(
+            builder.Configuration.GetSection("EmailSettings"));
+
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
             builder.Services.AddScoped<PetService>();
+            builder.Services.AddScoped<IPetRepository, PetRepository>();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -60,11 +68,11 @@ namespace EXE_PET_HUB.API
             app.MapControllers();
 
             //environment variable for port, default to 8080 if not set
-             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Run($"http://0.0.0.0:{port}");
+            // var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            //app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            //app.Run();
+            app.Run();
         }
     }
 }

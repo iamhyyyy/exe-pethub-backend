@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\\EXE_PET_HUB.Application\\EXE_PET_HUB.Application.csproj" />
+    <ProjectReference Include="..\EXE_PET_HUB.Application\EXE_PET_HUB.Application.csproj" />
     <ProjectReference Include="..\EXE_PET_HUB.Domain\EXE_PET_HUB.Domain.csproj" />
   </ItemGroup>
 
@@ -19,6 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    <PackageReference Include="MailKit" Version="4.15.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 

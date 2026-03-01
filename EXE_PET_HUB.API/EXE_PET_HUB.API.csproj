@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EXE_PET_HUB.Application\EXE_PET_HUB.Application.csproj" />
+    <ProjectReference Include="..\EXE_PET_HUB.Domain\EXE_PET_HUB.Domain.csproj" />
     <ProjectReference Include="..\EXE_PET_HUB.Infrastructure\EXE_PET_HUB.Infrastructure.csproj" />
   </ItemGroup>
 
@@ -16,13 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 

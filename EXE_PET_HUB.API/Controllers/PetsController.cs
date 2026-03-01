@@ -1,8 +1,6 @@
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
-using EXE_PET_HUB.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -11,13 +9,12 @@ namespace EXE_PET_HUB.API.Controllers
     public class PetsController : ControllerBase
     {
         private readonly IPetRepository _petRepository;
-        private readonly DbContext _context;
+        private readonly IEmailService _emailService;
 
-        public PetsController(IPetRepository petRepository, AppDbContext context)
+        public PetsController(IPetRepository petRepository, IEmailService emailService)
         {
             _petRepository = petRepository;
-            _context = context; // Assuming the repository is using a DbContext internally
-
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -27,18 +24,40 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(pets);
         }
 
-        [HttpGet("test-db")]
-        public async Task<IActionResult> TestDb()
+        [HttpPost]
+        public async Task<IActionResult> CreatePet(Pet pet)
         {
+            // Lưu DB trước
+            await _petRepository.AddAsync(pet);
+
+            // Gửi email thông báo (nếu fail thì log nhưng không crash API)
+            bool emailSent = false;
+            string? emailError = null;
+            
             try
             {
-                var canConnect = await _context.Database.CanConnectAsync();
-                return Ok(new { canConnect });
+                await _emailService.SendEmailAsync(
+                    "huyheo05092004@gmail.com",
+                    "Pet Created Successfully",
+                    $"<h2>Pet {pet.Name} đã được tạo thành công!</h2>");
+                emailSent = true;
+                Console.WriteLine($"Email sent successfully to huyheo05092004@gmail.com");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                // Log lỗi nhưng vẫn trả về success vì pet đã được lưu vào DB
+                emailSent = false;
+                emailError = ex.Message;
+                Console.WriteLine($"Warning: Failed to send email notification: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
             }
+
+            return Ok(new { 
+                message = "Pet created successfully", 
+                pet = pet,
+                emailSent = emailSent,
+                emailError = emailError // Trả về lỗi nếu có để debug
+            });
         }
 
     }
