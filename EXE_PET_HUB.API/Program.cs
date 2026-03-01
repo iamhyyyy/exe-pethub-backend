@@ -24,38 +24,9 @@ namespace EXE_PET_HUB.API
             //builder.Services.AddDbContext<AppDbContext>(options =>
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             //Add DBContext PostgreSQL
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            //debug sql
-            var conn = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            // Fallback: nếu không lấy được từ appsettings, thử đọc từ biến môi trường (deploy như Render)
-            if (string.IsNullOrEmpty(conn))
-            {
-                conn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                       ?? Environment.GetEnvironmentVariable("DATABASE_URL");
-            }
-
-            // Một số platform (hoặc UI env var) có thể tự thêm dấu " ở đầu/cuối connection string
-            // => Trim whitespace + dấu quote để Npgsql parse không bị lỗi "Format of the initialization string..."
-            if (!string.IsNullOrEmpty(conn))
-            {
-                conn = conn.Trim();
-                if ((conn.StartsWith("\"") && conn.EndsWith("\"")) ||
-                    (conn.StartsWith("'") && conn.EndsWith("'")))
-                {
-                    conn = conn.Substring(1, conn.Length - 2);
-                }
-            }
-
-            Console.WriteLine("==== CONNECTION STRING FROM RENDER ====");
-            Console.WriteLine(string.IsNullOrEmpty(conn) ? "<NULL OR EMPTY>" : conn);
-            Console.WriteLine("=======================================");
-
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(conn)
-            );
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             //Add Identity services
             builder.Services.AddIdentity<AppUser, IdentityRole>()
