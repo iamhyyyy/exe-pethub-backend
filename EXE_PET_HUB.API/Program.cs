@@ -17,9 +17,10 @@ namespace EXE_PET_HUB.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Configure email settings
-            builder.Services.Configure<EmailSettings>(
-            builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.Configure<SendGridSettings>(
+            builder.Configuration.GetSection("SendGridSettings"));
 
+            builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddScoped<PetService>();
