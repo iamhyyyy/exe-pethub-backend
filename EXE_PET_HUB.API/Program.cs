@@ -1,7 +1,7 @@
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
+using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Data;
-using EXE_PET_HUB.Infrastructure.Identity;
 using EXE_PET_HUB.Infrastructure.Repositories;
 using EXE_PET_HUB.Infrastructure.Services;
 using EXE_PET_HUB.Infrastructure.Settings;
@@ -12,7 +12,7 @@ namespace EXE_PET_HUB.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -34,11 +34,11 @@ namespace EXE_PET_HUB.API
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             //Add DBContext PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PetHubDbConnection")));
 
 
             //Add Identity services
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
+            builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                             .AddEntityFrameworkStores<AppDbContext>()
                             .AddDefaultTokenProviders();
 
@@ -48,6 +48,30 @@ namespace EXE_PET_HUB.API
 
 
             var app = builder.Build();
+
+            //seed data
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<AppDbContext>();
+
+                    // 1. Tự động chạy Migration (Tạo bảng trên Neon nếu chưa có)
+                    await context.Database.MigrateAsync();
+
+                    // 2. Chạy SeedData
+                    var seedData = new SeedData();
+                    await seedData.InitializeAsync(services);
+
+                    Console.WriteLine("Database Migration & Seed completed successfully!");
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+                }
+            }
 
 
             // if (app.Environment.IsDevelopment())
@@ -69,11 +93,11 @@ namespace EXE_PET_HUB.API
             app.MapControllers();
 
             //environment variable for port, default to 8080 if not set
-             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Run($"http://0.0.0.0:{port}");
+            // var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            //app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            //app.Run();
+            app.Run();
         }
     }
 }
