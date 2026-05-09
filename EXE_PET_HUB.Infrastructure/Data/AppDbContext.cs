@@ -1,29 +1,53 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using EXE_PET_HUB.Domain.Entities;
-using EXE_PET_HUB.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace EXE_PET_HUB.Infrastructure.Data
 {
-    public class AppDbContext : IdentityDbContext<AppUser>
+    public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
         }
 
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<AppointmentReminder> AppointmentReminders { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Pet> Pets { get; set; }
+        public DbSet<StorePackagePayment> StorePackagePayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Pet>().HasData(
-                new Pet { Id = 1, Name = "Mochi",   Species = "Chó",     Age = 2, Price = 5000000 },
-                new Pet { Id = 2, Name = "Kitty",   Species = "Mèo",     Age = 1, Price = 3000000 },
-                new Pet { Id = 3, Name = "Buddy",   Species = "Chó",     Age = 3, Price = 7000000 },
-                new Pet { Id = 4, Name = "Coco",    Species = "Mèo",     Age = 2, Price = 4000000 },
-                new Pet { Id = 5, Name = "Hamchi",  Species = "Hamster", Age = 1, Price = 500000  }
+            // Đổi tên bảng Identity mặc định, không override property
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
+            modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+
+            // Seed roles với GUID cố định
+            var adminRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+            var managerRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+            var customerRoleId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+            modelBuilder.Entity<IdentityRole<Guid>>().HasData(
+                new IdentityRole<Guid> { Id = adminRoleId, Name = "admin", NormalizedName = "ADMIN" },
+                new IdentityRole<Guid> { Id = managerRoleId, Name = "manager", NormalizedName = "MANAGER" },
+                new IdentityRole<Guid> { Id = customerRoleId, Name = "customer", NormalizedName = "CUSTOMER" }
             );
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            });
         }
     }
 }

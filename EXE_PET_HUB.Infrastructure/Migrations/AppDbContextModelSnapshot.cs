@@ -46,7 +46,7 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pets");
+                    b.ToTable("Pets", (string)null);
 
                     b.HasData(
                         new
