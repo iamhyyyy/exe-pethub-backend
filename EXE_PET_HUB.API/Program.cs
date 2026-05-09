@@ -34,7 +34,7 @@ namespace EXE_PET_HUB.API
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             //Add DBContext PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PetHubDbConnection")));
 
 
             //Add Identity services
