@@ -24,10 +24,10 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             return await _context.Pets.FindAsync(id);
         }
 
-        public async Task AddAsync(Pet pet)
+        public Task AddAsync(Pet pet)
         {
             _context.Pets.Add(pet);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(int id)
@@ -36,7 +36,6 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             if (pet != null)
             {
                 _context.Pets.Remove(pet);
-                await _context.SaveChangesAsync();
             }
         }
     }

@@ -25,6 +25,7 @@ namespace EXE_PET_HUB.API
 
             builder.Services.AddScoped<PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Add services to the container.
             builder.Services.AddControllers();

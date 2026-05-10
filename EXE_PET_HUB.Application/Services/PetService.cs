@@ -5,16 +5,16 @@ namespace EXE_PET_HUB.Application.Services
 {
     public class PetService
     {
-        private readonly IPetRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PetService(IPetRepository repository)
+        public PetService(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<Pet>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _unitOfWork.PetRepository.GetAllAsync();
         }
     }
 }
