@@ -1,4 +1,7 @@
+
+using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
+using EXE_PET_HUB.Application.Services;
 using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +12,51 @@ namespace EXE_PET_HUB.API.Controllers
     [Route("api/[controller]")]
     public class PetsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly PetService _petService;
         private readonly IEmailService _emailService;
 
-        public PetsController(IUnitOfWork unitOfWork, IEmailService emailService)
+        public PetsController(PetService petService, IEmailService emailService)
         {
-            _unitOfWork = unitOfWork;
+            _petService = petService;
             _emailService = emailService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Pet>>> GetAll()
+        public async Task<ActionResult<List<PetDto>>> GetAll()
         {
-            var pets = await _unitOfWork.PetRepository.GetAllAsync();
+            var pets = await _petService.GetAllAsync();
             return Ok(pets);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PetDto>> GetById(string id)
+        {
+            var pet = await _petService.GetByIdAsync(id);
+            if (pet == null) return NotFound();
+            return Ok(pet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(PetDto pet)
+        {
+            await _petService.CreateAsync(pet);
+            return CreatedAtAction(nameof(GetById), new { id = pet.Id }, pet);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Update(PetDto dto)
+        {
+            await _petService.Update(dto);
+            return NoContent();
+            //if (id != pet.Id)
+            //    return BadRequest();
+            //var existingPet = await _petService.GetByIdAsync(id);
+            //if (existingPet == null)
+            //    return NotFound();
+            //await _petService.Update(pet);
+            //return NoContent();
+
+
         }
 
         [HttpGet("test")]
