@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
-    public class PetRepository : IPetRepository
+    public class PetRepository : GenericRepository<Pet>, IPetRepository
     {
         private readonly AppDbContext _context;
 
-        public PetRepository(AppDbContext context)
+        public PetRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
@@ -30,13 +30,19 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(int id)
+        public Task UpdateAsync(Pet pet)
         {
-            var pet = await _context.Pets.FindAsync(id);
-            if (pet != null)
-            {
-                _context.Pets.Remove(pet);
-            }
+            _context.Pets.Update(pet);
+            return Task.CompletedTask;
         }
+
+        //public async Task DeleteAsync(string id)
+        //{
+        //    var pet = await _context.Pets.FindAsync(id);
+        //    if (pet != null)
+        //    {
+        //        _context.Pets.Remove(pet);
+        //    }
+        //}
     }
 }

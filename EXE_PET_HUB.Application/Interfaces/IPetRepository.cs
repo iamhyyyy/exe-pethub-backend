@@ -2,11 +2,8 @@
 
 namespace EXE_PET_HUB.Application.Interfaces
 {
-    public interface IPetRepository
+    public interface IPetRepository : IGenericRepository<Pet>
     {
-        Task<List<Pet>> GetAllAsync();
-        Task<Pet?> GetByIdAsync(int id);
-        Task AddAsync(Pet pet);
-        Task DeleteAsync(int id);
+
     }
 }
