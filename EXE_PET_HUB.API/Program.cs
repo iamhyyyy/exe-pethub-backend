@@ -28,6 +28,7 @@ namespace EXE_PET_HUB.API
 
             builder.Services.AddScoped<PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<IAuthService, AuthService>();

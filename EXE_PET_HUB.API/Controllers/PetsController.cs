@@ -9,19 +9,19 @@ namespace EXE_PET_HUB.API.Controllers
     [Route("api/[controller]")]
     public class PetsController : ControllerBase
     {
-        private readonly IPetRepository _petRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
 
-        public PetsController(IPetRepository petRepository, IEmailService emailService)
+        public PetsController(IUnitOfWork unitOfWork, IEmailService emailService)
         {
-            _petRepository = petRepository;
+            _unitOfWork = unitOfWork;
             _emailService = emailService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Pet>>> GetAll()
         {
-            var pets = await _petRepository.GetAllAsync();
+            var pets = await _unitOfWork.PetRepository.GetAllAsync();
             return Ok(pets);
         }
 
