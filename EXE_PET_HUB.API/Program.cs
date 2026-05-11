@@ -7,6 +7,9 @@ using EXE_PET_HUB.Infrastructure.Services;
 using EXE_PET_HUB.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace EXE_PET_HUB.API
 {
@@ -26,6 +29,9 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
 
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
             // Add services to the container.
             builder.Services.AddControllers();
 
@@ -37,11 +43,28 @@ namespace EXE_PET_HUB.API
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PetHubDbConnection")));
 
 
-            //Add Identity services
+            //Add Identity services, chỗ này là đăng ký để ASP.Net tự DI dùm ở chỗ AuthService
             builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                             .AddEntityFrameworkStores<AppDbContext>()
                             .AddDefaultTokenProviders();
-
+            //Config JWT Authentication
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>{
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                };
+            });
             //Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -102,7 +125,11 @@ namespace EXE_PET_HUB.API
             app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-
+            //app.MapGet("/", context =>
+            //{
+            //    context.Response.Redirect("/swagger");
+            //    return Task.CompletedTask;
+            //});
             //app.Run();
         }
     }
