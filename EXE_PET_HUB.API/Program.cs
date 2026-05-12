@@ -1,13 +1,14 @@
 using EXE_PET_HUB.Application.Interfaces;
+using EXE_PET_HUB.Application.Mappings;
 using EXE_PET_HUB.Application.Services;
 using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Data;
 using EXE_PET_HUB.Infrastructure.Repositories;
 using EXE_PET_HUB.Infrastructure.Services;
 using EXE_PET_HUB.Infrastructure.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -23,11 +24,16 @@ namespace EXE_PET_HUB.API
             builder.Services.Configure<SendGridSettings>(
             builder.Configuration.GetSection("SendGridSettings"));
 
+            
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddScoped<PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
+
+            //builder.Services.AddScoped<MedicalRecordService>();
+            builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<AuthService>();
@@ -48,6 +54,10 @@ namespace EXE_PET_HUB.API
             builder.Services.AddIdentity<User, IdentityRole<Guid>>()
                             .AddEntityFrameworkStores<AppDbContext>()
                             .AddDefaultTokenProviders();
+
+            //Add AutoMapper
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
             //Config JWT Authentication
             builder.Services.AddAuthentication(options =>
             {
@@ -66,6 +76,8 @@ namespace EXE_PET_HUB.API
                         Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
             });
+
+
             //ADD CORS
             builder.Services.AddCors(options =>
             {
@@ -130,21 +142,18 @@ namespace EXE_PET_HUB.API
 
             app.MapControllers();
 
-            //environment variable for port, default to 8080 if not set
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             app.MapGet("/", context =>
             {
                 context.Response.Redirect("/swagger");
                 return Task.CompletedTask;
             });
+
+            //environment variable for port, default to 8080 if not set
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            //app.MapGet("/", context =>
-            //{
-            //    context.Response.Redirect("/swagger");
-            //    return Task.CompletedTask;
-            //});
+
             //app.Run();
         }
     }

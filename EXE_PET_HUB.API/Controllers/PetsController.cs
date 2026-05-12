@@ -48,15 +48,6 @@ namespace EXE_PET_HUB.API.Controllers
         {
             await _petService.Update(dto);
             return NoContent();
-            //if (id != pet.Id)
-            //    return BadRequest();
-            //var existingPet = await _petService.GetByIdAsync(id);
-            //if (existingPet == null)
-            //    return NotFound();
-            //await _petService.Update(pet);
-            //return NoContent();
-
-
         }
 
         [HttpGet("test")]

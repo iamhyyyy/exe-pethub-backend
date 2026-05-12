@@ -1,43 +1,44 @@
 ﻿using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.DTOs;
+using AutoMapper;
 
 namespace EXE_PET_HUB.Application.Services
 {
     public class PetService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public PetService(IUnitOfWork unitOfWork)
+        public PetService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<List<Pet>> GetAllAsync()
+        public async Task<List<PetDto>> GetAllAsync()
         {
-            return await _unitOfWork.PetRepository.GetAllAsync();
+            var pets = await _unitOfWork.PetRepository.GetAllAsync();
+
+            return _mapper.Map<List<PetDto>>(pets);
         }
 
-        public async Task<Pet?> GetByIdAsync(string id)
+        public async Task<PetDto?> GetByIdAsync(string id)
         {
-            return await _unitOfWork.PetRepository.GetByIdAsync(id);
+            var pet = await _unitOfWork.PetRepository.GetByIdAsync(id);
+
+            return pet == null ? null : _mapper.Map<PetDto>(pet);
         }
 
         public async Task<PetDto> CreateAsync(PetDto dto)
         {
-            var pet = new Pet
-            {
-                Id = Guid.NewGuid().ToString(),
-                CustomerId = dto.CustomerId,
-                Name = dto.Name,
-                Species = dto.Species,
-                Color = dto.Color,
-                DateOfBirth = dto.DateOfBirth
-            };
+
+            var pet = _mapper.Map<Pet>(dto);
+            pet.Id = Guid.NewGuid().ToString();
             await _unitOfWork.PetRepository.AddAsync(pet);
             await _unitOfWork.CompleteAsync();
-            dto.Id = pet.Id;
-            return dto;
+            
+            return _mapper.Map<PetDto>(pet);
         }
 
         public async Task<bool> Update(PetDto dto)
