@@ -66,6 +66,17 @@ namespace EXE_PET_HUB.API
                         Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
             });
+            //ADD CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()   // Cho phép tất cả các nguồn (domain)
+                          .AllowAnyHeader()   // Cho phép tất cả các Header
+                          .AllowAnyMethod();  // Cho phép tất cả các phương thức (GET, POST, PUT, DELETE...)
+                });
+            });
+
             //Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -105,6 +116,9 @@ namespace EXE_PET_HUB.API
             // }
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            //AllowAll
+            app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
 
