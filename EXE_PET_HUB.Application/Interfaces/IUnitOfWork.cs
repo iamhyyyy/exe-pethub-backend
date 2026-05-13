@@ -6,5 +6,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         Task<int> CompleteAsync();
         IPetRepository PetRepository { get; }
         IMedicalRecordRepository MedicalRecordRepository { get; }
+        IItemRepository ItemRepository { get; }
     }
 }

@@ -34,6 +34,9 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<MedicalRecordService>();
             builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
 
+            builder.Services.AddScoped<ItemService>();
+            builder.Services.AddScoped<IItemRepository, ItemRepository>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<AuthService>();

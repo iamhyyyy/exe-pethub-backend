@@ -10,6 +10,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private Hashtable? _repositories;
         private IPetRepository? _petRepository;
         private IMedicalRecordRepository? _medicalRecordRepository;
+        private IItemRepository? _itemRepository;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -36,6 +37,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
 
         public IPetRepository PetRepository => _petRepository ??= new PetRepository(_context);
         public IMedicalRecordRepository MedicalRecordRepository => _medicalRecordRepository ??= new MedicalRecordRepository(_context);
+        public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_context);
 
         public async Task<int> CompleteAsync()
         {
