@@ -40,12 +40,5 @@ namespace EXE_PET_HUB.API.Controllers
             if (!updated) return NotFound();
             return NoContent();
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(string id)
-        {
-            var deleted = await _itemService.DeleteAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
-        }
     }
 }
