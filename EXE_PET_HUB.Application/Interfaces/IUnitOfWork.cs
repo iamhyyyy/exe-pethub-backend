@@ -5,5 +5,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         IGenericRepository<T> Repository<T>() where T : class;
         Task<int> CompleteAsync();
         IPetRepository PetRepository { get; }
+        IMedicalRecordRepository MedicalRecordRepository { get; }
     }
 }

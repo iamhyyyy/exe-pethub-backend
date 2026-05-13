@@ -2,8 +2,6 @@
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
-using EXE_PET_HUB.Domain.Entities;
-using EXE_PET_HUB.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXE_PET_HUB.API.Controllers
