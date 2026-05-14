@@ -31,7 +31,7 @@ namespace EXE_PET_HUB.Application.Services
             return record == null ? null : _mapper.Map<MedicalRecordDto>(record);
         }
 
-        public async Task<MedicalRecordDto> CreateAsync(MedicalRecordDto dto)
+        public async Task<MedicalRecordDto> CreateAsync(CreateMedicalRecordDto dto)
         {
 
             var record = _mapper.Map<MedicalRecord>(dto);
@@ -42,15 +42,12 @@ namespace EXE_PET_HUB.Application.Services
             return _mapper.Map<MedicalRecordDto>(record);
         }
 
-        public async Task<bool> Update(MedicalRecordDto dto)
+        public async Task<bool> Update(string id, UpdateMedicalRecordDto dto)
         {
-            var record = await _unitOfWork.MedicalRecordRepository.GetByIdAsync(dto.Id);
+            var record = await _unitOfWork.MedicalRecordRepository.GetByIdAsync(id);
             if (record == null) return false;
 
-            record.Diagnosis = dto.Diagnosis;
-            record.Treatment = dto.Treatment;
-            record.Prescription = dto.Prescription;
-            record.MedicalRecordNote = dto.MedicalRecordNote;
+            _mapper.Map(dto, record);
 
             _unitOfWork.MedicalRecordRepository.Update(record);
             await _unitOfWork.CompleteAsync();

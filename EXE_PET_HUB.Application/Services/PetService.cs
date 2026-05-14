@@ -30,9 +30,8 @@ namespace EXE_PET_HUB.Application.Services
             return pet == null ? null : _mapper.Map<PetDto>(pet);
         }
 
-        public async Task<PetDto> CreateAsync(PetDto dto)
+        public async Task<PetDto> CreateAsync(CreatePetDto dto)
         {
-
             var pet = _mapper.Map<Pet>(dto);
             pet.Id = Guid.NewGuid().ToString();
             await _unitOfWork.PetRepository.AddAsync(pet);
@@ -41,15 +40,12 @@ namespace EXE_PET_HUB.Application.Services
             return _mapper.Map<PetDto>(pet);
         }
 
-        public async Task<bool> Update(PetDto dto)
+        public async Task<bool> Update(string id, UpdatePetDto dto)
         {
-            var pet = await _unitOfWork.PetRepository.GetByIdAsync(dto.Id);
+            var pet = await _unitOfWork.PetRepository.GetByIdAsync(id);
             if (pet == null) return false;
             
-            pet.Name = dto.Name;
-            pet.Color = dto.Color;
-            pet.DateOfBirth = dto.DateOfBirth;
-            pet.Species = dto.Species;
+            _mapper.Map(dto, pet);
 
             _unitOfWork.PetRepository.Update(pet);
             await _unitOfWork.CompleteAsync();

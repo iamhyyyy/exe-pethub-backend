@@ -3,6 +3,7 @@ using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -35,30 +36,31 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(PetDto pet)
+        public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
         {
-            await _petService.CreateAsync(pet);
+            var pet = await _petService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = pet.Id }, pet);
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> Update(PetDto dto)
+        public async Task<ActionResult> Update(string id, UpdatePetDto dto)
         {
-            await _petService.Update(dto);
+            var pet = await _petService.Update(id, dto);
+            if (!pet) return NotFound();
             return NoContent();
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> SendTest()
-        {
-            await _emailService.SendEmailAsync(
-                "huyndse184016@fpt.edu.vn",
-                "Test Mail",
-                "Hello from PetHub 🐶"
-            );
+        //[HttpGet("test")]
+        //public async Task<IActionResult> SendTest()
+        //{
+        //    await _emailService.SendEmailAsync(
+        //        "huyndse184016@fpt.edu.vn",
+        //        "Test Mail",
+        //        "Hello from PetHub 🐶"
+        //    );
 
-            return Ok("Email sent");
-        }
+        //    return Ok("Email sent");
+        //}
     }
 
 }

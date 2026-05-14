@@ -34,16 +34,17 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(MedicalRecordDto record)
+        public async Task<ActionResult> Create(CreateMedicalRecordDto dto)
         {
-            await _recordService.CreateAsync(record);
+            var record = await _recordService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = record.Id }, record);
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> Update(MedicalRecordDto dto)
+        public async Task<ActionResult> Update(string id, UpdateMedicalRecordDto dto)
         {
-            await _recordService.Update(dto);
+           var record = await _recordService.Update(id, dto);
+            if(!record) return NotFound();
             return NoContent();
         }
     }
