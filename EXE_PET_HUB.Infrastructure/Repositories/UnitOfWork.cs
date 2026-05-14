@@ -11,6 +11,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private IPetRepository? _petRepository;
         private IMedicalRecordRepository? _medicalRecordRepository;
         private IItemRepository? _itemRepository;
+        private IInvoiceRepository _invoiceRepository;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -38,7 +39,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         public IPetRepository PetRepository => _petRepository ??= new PetRepository(_context);
         public IMedicalRecordRepository MedicalRecordRepository => _medicalRecordRepository ??= new MedicalRecordRepository(_context);
         public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_context);
-
+        public IInvoiceRepository InvoiceRepository => _invoiceRepository ??= new InvoiceRepository(_context);
         public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();

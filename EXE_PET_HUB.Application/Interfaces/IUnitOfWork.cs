@@ -7,5 +7,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         IPetRepository PetRepository { get; }
         IMedicalRecordRepository MedicalRecordRepository { get; }
         IItemRepository ItemRepository { get; }
+        IInvoiceRepository InvoiceRepository { get; }
     }
 }

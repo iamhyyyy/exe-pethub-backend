@@ -22,6 +22,16 @@ namespace EXE_PET_HUB.Application.Mappings
             CreateMap<Item, ItemDto>().ReverseMap();
             CreateMap<CreateItemDto, Item>();
             CreateMap<UpdateItemDto, Item>();
+
+            CreateMap<Invoice, InvoiceDto>()
+            .ForMember(dest => dest.PetName,
+                opt => opt.MapFrom(src => src.Pet!.Name))
+            .ForMember(dest => dest.AppointmentNote,
+                opt => opt.MapFrom(src => src.Appointment!.AppointmentNote))
+            .ForMember(dest => dest.CustomerName,
+                opt => opt.MapFrom(src => src.Customer!.UserName));
+
+            CreateMap<InvoiceDetail, InvoiceDetailsDto>();
         }
     }
 }
