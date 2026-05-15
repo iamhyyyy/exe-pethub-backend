@@ -20,5 +20,19 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .Include(p => p.Pet)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
+
+        public async Task<List<Appointment>> GetByCustomerIdAsync(Guid customerId)
+        {
+            return await _context.Appointments
+                .Where(a => a.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Appointment>> GetByPetIdAsync(string petId)
+        {
+            return await _context.Appointments
+                .Where(a => a.PetId == petId)
+                .ToListAsync();
+        }
     }
 }

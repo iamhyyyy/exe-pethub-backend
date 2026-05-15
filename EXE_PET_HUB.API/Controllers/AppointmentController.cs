@@ -33,6 +33,20 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(appointment);
         }
 
+        [HttpGet("appointments/pet/{petId}")]
+        public async Task<ActionResult<List<AppointmentDto>>> GetByPetId(string petId)
+        {
+            var appointments = await _appointmentService.GetByPetIdAsync(petId);
+            return Ok(appointments);
+        }
+
+        [HttpGet("appointments/customer/{customerId}")]
+        public async Task<ActionResult<List<AppointmentDto>>> GetByCustomerId(Guid customerId)
+        {
+            var appointments = await _appointmentService.GetByCustomerIdAsync(customerId);
+            return Ok(appointments);
+        }
+
         [HttpPost("appointment")]
         public async Task<ActionResult<AppointmentDto>> Create(CreateAppointmentDto dto)
         {

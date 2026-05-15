@@ -31,6 +31,18 @@ namespace EXE_PET_HUB.Application.Services
             return record == null ? null : _mapper.Map<MedicalRecordDto>(record);
         }
 
+        public async Task<List<MedicalRecordDto>> GetByPetIdAsync(string petId)
+        {
+            var records = await _unitOfWork.MedicalRecordRepository.GetByPetIdAsync(petId);
+            return _mapper.Map<List<MedicalRecordDto>>(records);
+        }
+
+        public async Task<List<MedicalRecordDto>> GetByAppointmentIdAsync(string appointmentId)
+        {
+            var records = await _unitOfWork.MedicalRecordRepository.GetByAppointmentIdAsync(appointmentId);
+            return _mapper.Map<List<MedicalRecordDto>>(records);
+        }
+
         public async Task<MedicalRecordDto> CreateAsync(CreateMedicalRecordDto dto)
         {
 

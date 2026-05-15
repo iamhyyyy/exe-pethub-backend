@@ -37,6 +37,18 @@ namespace EXE_PET_HUB.Application.Services
             return appointment == null ? null : _mapper.Map<AppointmentDto>(appointment);
         }
 
+        public async Task<List<AppointmentDto>> GetByPetIdAsync(string petId)
+        {
+            var appointments = await _unitOfWork.AppointmentRepository.GetByPetIdAsync(petId);
+            return _mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetByCustomerIdAsync(Guid customerId)
+        {
+            var appointments = await _unitOfWork.AppointmentRepository.GetByCustomerIdAsync(customerId);
+            return _mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
         public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto)
         {
             var appointment = _mapper.Map<Appointment>(dto);

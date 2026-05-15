@@ -33,6 +33,20 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(record);
         }
 
+        [HttpGet("medical_records/pet/{petId}")]
+        public async Task<ActionResult<List<MedicalRecordDto>>> GetByPetId(string petId)
+        {
+            var records = await _recordService.GetByPetIdAsync(petId);
+            return Ok(records);
+        }
+
+        [HttpGet("medical_records/appointment/{appointmentId}")]
+        public async Task<ActionResult<List<MedicalRecordDto>>> GetByAppointmentId(string appointmentId)
+        {
+            var records = await _recordService.GetByAppointmentIdAsync(appointmentId);
+            return Ok(records);
+        }
+
         [HttpPost("medical_record")]
         public async Task<ActionResult> Create(CreateMedicalRecordDto dto)
         {
