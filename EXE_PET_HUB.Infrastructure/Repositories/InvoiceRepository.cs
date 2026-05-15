@@ -1,7 +1,9 @@
-﻿using EXE_PET_HUB.Application.Interfaces;
+﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,16 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .Include(i => i.Customer)
                 .ToListAsync();
         }
+
+        public async Task<Invoice> GetInvoiceWithDetailsAsync(string invoiceId)
+        {
+            return await _context.Invoices
+                .Include(i => i.Pet)
+                .Include(i => i.Appointment)
+                .Include(i => i.Customer)
+                .Where(i => i.Id == invoiceId)
+                .SingleOrDefaultAsync();
+        }
         public async Task<List<Invoice>> GetAllInvoicesDetailsByCusIDAsync(Guid customerId)
         {
             return await _context.Invoices
@@ -41,5 +53,6 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .Where(i => i.InvoiceId == invoiceID)
                 .ToListAsync();
         }
+
     }
 }

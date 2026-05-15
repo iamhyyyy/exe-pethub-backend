@@ -31,7 +31,19 @@ namespace EXE_PET_HUB.Application.Mappings
             .ForMember(dest => dest.CustomerName,
                 opt => opt.MapFrom(src => src.Customer!.UserName));
 
+            CreateMap<CreateInvoiceDetailDto, Invoice>();
+
+            CreateMap<Invoice, ResponseInvoiceOfCreateDto>()
+                .ForMember(dest => dest.PetName,
+                opt => opt.MapFrom(src => src.Pet!.Name))
+                .ForMember(dest => dest.AppointmentNote,
+                    opt => opt.MapFrom(src => src.Appointment!.AppointmentNote))
+                .ForMember(dest => dest.CustomerName,
+                    opt => opt.MapFrom(src => src.Customer!.UserName));
+
             CreateMap<InvoiceDetail, InvoiceDetailsDto>();
+
+            CreateMap<CreateInvoiceDetailDto, InvoiceDetail>();
         }
     }
 }

@@ -24,19 +24,55 @@ namespace EXE_PET_HUB.Application.Services
         public async Task<List<InvoiceDto>> GetAllAsync()
         {
             var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesWithDetailsAsync();
-            return _mapper.Map<List<InvoiceDto>>(items);
+            return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
+        }
+
+        public async Task<InvoiceDto?> GetByIdAsync(string id)
+        {
+            var items = await _unitOfWork.InvoiceRepository.GetInvoiceWithDetailsAsync(id);
+            return items == null ? null : _mapper.Map<InvoiceDto>(items);
         }
 
         public async Task<List<InvoiceDto>> GetAllByCusIDAsync(Guid cusID)
         {
             var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesDetailsByCusIDAsync(cusID);
-            return _mapper.Map<List<InvoiceDto>>(items);
+            return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
         }
 
         public async Task<List<InvoiceDetailsDto>> GetInvoiceDetailsAsync(string invoiceID)
         {
             var items = await _unitOfWork.InvoiceRepository.GetDetailsAsync(invoiceID);
-            return _mapper.Map<List<InvoiceDetailsDto>>(items);
+            return items == null ? null : _mapper.Map<List<InvoiceDetailsDto>>(items);
+        }
+
+        public async Task<ResponseInvoiceOfCreateDto> CreateInvoiceAsync(CreateInvoiceDto dto)
+        {
+            if (dto.Details == null || !dto.Details.Any())
+            {
+                throw new Exception("Invoice must have at least one detail");
+            }
+
+            var invoice = new Invoice
+            {
+                Id = Guid.NewGuid().ToString(),
+                PetId = dto.PetId,
+                AppointmentId = dto.AppointmentId,
+                CustomerId = dto.CustomerId,
+                CreatedAt = DateTime.UtcNow,
+
+                Details = dto.Details.Select(x => new InvoiceDetail
+                {
+                    ItemName = x.ItemName,
+                    Price = x.Price,
+                    Quantity = x.Quantity,
+                    Subtotal = x.Price * x.Quantity
+                }).ToList(),
+
+                TotalAmount = dto.Details.Sum(x => x.Price * x.Quantity)
+            };
+            await _unitOfWork.InvoiceRepository.AddAsync(invoice);
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<ResponseInvoiceOfCreateDto>(invoice);
         }
     }
 }

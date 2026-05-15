@@ -16,7 +16,7 @@ namespace EXE_PET_HUB.Domain.Entities
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string Name { get; set; } = null!;
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public ItemType Type { get; set; }
     }
 }

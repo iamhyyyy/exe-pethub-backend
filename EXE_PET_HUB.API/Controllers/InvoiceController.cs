@@ -21,6 +21,15 @@ namespace EXE_PET_HUB.API.Controllers
             var items = await _invoiceService.GetAllAsync();
             return Ok(items);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<InvoiceDto>> GetById(string id)
+        {
+            var item = await _invoiceService.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            return Ok(item);
+        }
+
         [HttpGet("customer/{customerId}")]
         public async Task<ActionResult<List<InvoiceDto>>> GetAllByCusID(Guid customerId)
         {
@@ -35,5 +44,11 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(items);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<ResponseInvoiceOfCreateDto>> Create(CreateInvoiceDto dto)
+        {
+            var createdInvoice = await _invoiceService.CreateInvoiceAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = createdInvoice.Id }, createdInvoice);
+        }
     }
 }
