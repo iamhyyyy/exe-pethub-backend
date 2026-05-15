@@ -37,6 +37,12 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<ItemService>();
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
+            builder.Services.AddScoped<AppointmentService>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+            //builder.Services.AddScoped<AppointmentReminderService>();
+            builder.Services.AddScoped<IAppointmentReminderRepository, AppointmentReminderRepository>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<AuthService>();
