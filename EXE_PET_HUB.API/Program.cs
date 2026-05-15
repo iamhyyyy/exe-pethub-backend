@@ -42,8 +42,8 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            builder.Services.AddScoped<InvoiceService>();
-            builder.Services.AddScoped<InvoiceRepository, InvoiceRepository>();
+            builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+            builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
             // Add services to the container.
             builder.Services.AddControllers();

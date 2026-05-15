@@ -1,4 +1,5 @@
-﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +9,9 @@ namespace EXE_PET_HUB.API.Controllers
     [Route("api/[controller]")]
     public class InvoiceController : ControllerBase
     {
-        private InvoiceService _invoiceService;
+        private IInvoiceService _invoiceService;
 
-        public InvoiceController(InvoiceService invoiceService)
+        public InvoiceController(IInvoiceService invoiceService)
         {
             _invoiceService = invoiceService;
         }

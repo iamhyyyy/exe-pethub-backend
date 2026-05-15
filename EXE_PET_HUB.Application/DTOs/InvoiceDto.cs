@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Domain.Entities;
+using EXE_PET_HUB.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -39,16 +39,14 @@ namespace EXE_PET_HUB.Application.DTOs
         public string ItemName { get; set; } = null!;
         public decimal Price { get; set; }
         public int Quantity { get; set; }
-        public double Subtotal { get; set; }
+        public decimal Subtotal { get; set; }
 
     }
 
     public class CreateInvoiceDetailDto
     {
-        public string ItemName { get; set; } = null!;
-        public decimal Price { get; set; }
+        public string ItemId { get; set; } = null!;
         public int Quantity { get; set; }
-
     }
 
     public class CreateInvoiceDto
