@@ -49,18 +49,13 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id)
+        {
+            var appointment = await _appointmentService.Delete(id);
+            if (!appointment) return NotFound();
+            return NoContent();
+        }
 
-        //[HttpGet("test")]
-        //public async Task<IActionResult> SendTest()
-        //{
-        //    await _emailService.SendEmailAsync(
-        //        "huyndse184016@fpt.edu.vn",
-        //        "Test Mail",
-        //        "Hello from PetHub 🐶"
-        //    );
-
-        //    return Ok("Email sent");
-        //}
     }
 
 }

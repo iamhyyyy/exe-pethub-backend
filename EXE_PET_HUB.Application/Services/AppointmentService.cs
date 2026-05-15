@@ -41,10 +41,13 @@ namespace EXE_PET_HUB.Application.Services
         {
             var appointment = _mapper.Map<Appointment>(dto);
             appointment.Id = Guid.NewGuid().ToString();
+            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.CreatedAt = DateTime.UtcNow;
+            appointment.UpdatedAt = DateTime.UtcNow;
             await _unitOfWork.AppointmentRepository.AddAsync(appointment);
             await _unitOfWork.CompleteAsync();
 
-            appointment = await _unitOfWork.AppointmentRepository.GetByIdWithIncludesAsync(appointment.Id);
+            appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointment.Id);
             var emailBody = WriteEmailContent(appointment);
             await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Confirmation for " + appointment.Pet.Name, emailBody);
 
@@ -57,11 +60,12 @@ namespace EXE_PET_HUB.Application.Services
             if (appointment == null) return false;
 
             _mapper.Map(dto, appointment);
+            appointment.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CompleteAsync();
 
-            appointment = await _unitOfWork.AppointmentRepository.GetByIdWithIncludesAsync(id);
+            appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
             var emailBody = WriteEmailContent(appointment);
             await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Update for " + appointment.Pet.Name, emailBody);
 
@@ -78,7 +82,7 @@ namespace EXE_PET_HUB.Application.Services
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CompleteAsync();
 
-            appointment = await _unitOfWork.AppointmentRepository.GetByIdWithIncludesAsync(id);
+            appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
             var emailBody = WriteEmailContent(appointment);
             await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Cancellation for " + appointment.Pet.Name, emailBody);
 

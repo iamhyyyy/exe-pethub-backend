@@ -20,9 +20,9 @@ namespace EXE_PET_HUB.Domain.Entities
         [Column(TypeName = "varchar(255)")]
         public string ItemName { get; set; } = null!;
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public int Quantity { get; set; }
-        public double Subtotal { get; set; } // Nên tính toán trước khi lưu
+        public decimal Subtotal { get; set; } // Nên tính toán trước khi lưu
 
         [ForeignKey(nameof(InvoiceId))]
         public Invoice Invoice { get; set; } = null!;

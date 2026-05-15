@@ -13,6 +13,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private IItemRepository? _itemRepository;
         private IAppointmentReminderRepository? _appointmentReminderRepository;
         private IAppointmentRepository? appointmentRepository;
+        private IInvoiceRepository? _invoiceRepository;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -43,6 +44,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         public IAppointmentReminderRepository AppointmentReminderRepository => _appointmentReminderRepository ??= new AppointmentReminderRepository(_context);
         public IAppointmentRepository AppointmentRepository => appointmentRepository ??= new AppointmentRepository(_context);
 
+        public IInvoiceRepository InvoiceRepository => _invoiceRepository ??= new InvoiceRepository(_context);
         public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();

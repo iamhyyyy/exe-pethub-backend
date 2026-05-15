@@ -25,9 +25,6 @@ namespace EXE_PET_HUB.Application.DTOs
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public string? AppointmentNote { get; set; }
-        public AppointmentStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
     }
 
     public class UpdateAppointmentDto
@@ -39,6 +36,5 @@ namespace EXE_PET_HUB.Application.DTOs
         public TimeOnly EndTime { get; set; }
         public string? AppointmentNote { get; set; }
         public AppointmentStatus Status { get; set; }
-        public DateTime UpdatedAt { get; set; }
     }
 }

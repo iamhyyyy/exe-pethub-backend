@@ -49,14 +49,5 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
-
-        public async Task<bool> DeleteAsync(string id)
-        {
-            var item = await _unitOfWork.Repository<Item>().GetByIdAsync(id);
-            if (item == null) return false;
-            _unitOfWork.Repository<Item>().Delete(item);
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
     }
 }

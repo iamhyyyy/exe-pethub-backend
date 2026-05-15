@@ -11,6 +11,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         void Update(T entity);
         void Delete(T entity);
 
-        Task<T?> GetByIdWithIncludesAsync(string id, params Expression<Func<T, object>>[] includes);
+        //Task<T?> GetByIdWithIncludesAsync(string id, params Expression<Func<T, object>>[] includes);
     }
 }

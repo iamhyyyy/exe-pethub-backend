@@ -47,18 +47,18 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task<T?> GetByIdWithIncludesAsync(string id, params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = _dbSet;
+        //public async Task<T?> GetByIdWithIncludesAsync(string id, params Expression<Func<T, object>>[] includes)
+        //{
+        //    IQueryable<T> query = _dbSet;
 
-            // Tự động duyệt qua danh sách includes để nạp dữ liệu
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
+        //    // Tự động duyệt qua danh sách includes để nạp dữ liệu
+        //    foreach (var include in includes)
+        //    {
+        //        query = query.Include(include);
+        //    }
 
-            // Giả sử khóa chính của cậu luôn là 'Id' kiểu string
-            return await query.FirstOrDefaultAsync(e => EF.Property<string>(e, "Id") == id);
-        }
+        //    // Giả sử khóa chính của cậu luôn là 'Id' kiểu string
+        //    return await query.FirstOrDefaultAsync(e => EF.Property<string>(e, "Id") == id);
+        //}
     }
 }

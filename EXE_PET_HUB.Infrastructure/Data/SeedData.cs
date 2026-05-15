@@ -262,7 +262,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 {
                     var selectedItem = items[random.Next(items.Count)];
                     var quantity = random.Next(1, 3);
-                    var subtotal = (decimal)selectedItem.Price * quantity;
+                    var subtotal = selectedItem.Price * quantity;
 
                     invoiceDetails.Add(new InvoiceDetail
                     {
@@ -272,7 +272,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                         ItemName = selectedItem.Name,
                         Price = selectedItem.Price,
                         Quantity = quantity,
-                        Subtotal = (double)subtotal // Chuyển về double cho khớp với property của cậu
+                        Subtotal = subtotal // Chuyển về double cho khớp với property của cậu
                     });
 
                     total += subtotal;
