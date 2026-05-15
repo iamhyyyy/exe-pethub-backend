@@ -8,7 +8,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class AppointmentController : ControllerBase
     {
         private readonly AppointmentService _appointmentService;
@@ -18,14 +18,14 @@ namespace EXE_PET_HUB.API.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet]
+        [HttpGet("appointments")]
         public async Task<ActionResult<List<AppointmentDto>>> GetAll()
         {
             var appointments = await _appointmentService.GetAllAsync();
             return Ok(appointments);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("appointment/{id}")]
         public async Task<ActionResult<AppointmentDto>> GetById(string id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -33,14 +33,14 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(appointment);
         }
 
-        [HttpPost]
+        [HttpPost("appointment")]
         public async Task<ActionResult<AppointmentDto>> Create(CreateAppointmentDto dto)
         {
             var appointment = await _appointmentService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = appointment.Id }, appointment);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("appointment/{id}")]
         public async Task<ActionResult> Update(string id, UpdateAppointmentDto dto)
         {
             var appointment = await _appointmentService.Update(id, dto);
@@ -48,7 +48,7 @@ namespace EXE_PET_HUB.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("appointment/{id}")]
         public async Task<ActionResult> Delete(string id)
         {
             var appointment = await _appointmentService.Delete(id);

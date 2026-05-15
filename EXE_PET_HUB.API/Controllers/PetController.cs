@@ -8,26 +8,26 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class PetsController : ControllerBase
+    [Route("api")]
+    public class PetController : ControllerBase
     {
         private readonly PetService _petService;
         private readonly IEmailService _emailService;
 
-        public PetsController(PetService petService, IEmailService emailService)
+        public PetController(PetService petService, IEmailService emailService)
         {
             _petService = petService;
             _emailService = emailService;
         }
 
-        [HttpGet]
+        [HttpGet("pets")]
         public async Task<ActionResult<List<PetDto>>> GetAll()
         {
             var pets = await _petService.GetAllAsync();
             return Ok(pets);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("pet/{id}")]
         public async Task<ActionResult<PetDto>> GetById(string id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -35,14 +35,14 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(pet);
         }
 
-        [HttpPost]
+        [HttpPost("pet")]
         public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
         {
             var pet = await _petService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = pet.Id }, pet);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("pet/{id}")]
         public async Task<ActionResult> Update(string id, UpdatePetDto dto)
         {
             var pet = await _petService.Update(id, dto);
