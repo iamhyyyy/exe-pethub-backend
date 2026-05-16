@@ -11,6 +11,8 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private IPetRepository? _petRepository;
         private IMedicalRecordRepository? _medicalRecordRepository;
         private IItemRepository? _itemRepository;
+        private IAppointmentReminderRepository? _appointmentReminderRepository;
+        private IAppointmentRepository? appointmentRepository;
         private IInvoiceRepository? _invoiceRepository;
 
         public UnitOfWork(AppDbContext context)
@@ -39,6 +41,9 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         public IPetRepository PetRepository => _petRepository ??= new PetRepository(_context);
         public IMedicalRecordRepository MedicalRecordRepository => _medicalRecordRepository ??= new MedicalRecordRepository(_context);
         public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_context);
+        public IAppointmentReminderRepository AppointmentReminderRepository => _appointmentReminderRepository ??= new AppointmentReminderRepository(_context);
+        public IAppointmentRepository AppointmentRepository => appointmentRepository ??= new AppointmentRepository(_context);
+
         public IInvoiceRepository InvoiceRepository => _invoiceRepository ??= new InvoiceRepository(_context);
         public async Task<int> CompleteAsync()
         {

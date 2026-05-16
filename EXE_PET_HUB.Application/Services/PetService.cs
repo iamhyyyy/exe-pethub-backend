@@ -30,6 +30,12 @@ namespace EXE_PET_HUB.Application.Services
             return pet == null ? null : _mapper.Map<PetDto>(pet);
         }
 
+        public async Task<List<PetDto>> GetByCustomerIdAsync(Guid customerId)
+        {
+            var pets = await _unitOfWork.PetRepository.GetByCustomerIdAsync(customerId);
+            return _mapper.Map<List<PetDto>>(pets);
+        }
+
         public async Task<PetDto> CreateAsync(CreatePetDto dto)
         {
             var pet = _mapper.Map<Pet>(dto);

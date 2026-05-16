@@ -8,5 +8,7 @@ namespace EXE_PET_HUB.Application.Interfaces
         IMedicalRecordRepository MedicalRecordRepository { get; }
         IItemRepository ItemRepository { get; }
         IInvoiceRepository InvoiceRepository { get; }
+        IAppointmentRepository AppointmentRepository { get; }
+        IAppointmentReminderRepository AppointmentReminderRepository { get; }
     }
 }

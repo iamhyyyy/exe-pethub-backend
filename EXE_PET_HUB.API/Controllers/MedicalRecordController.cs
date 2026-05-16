@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class MedicalRecordController : ControllerBase
     {
         private readonly MedicalRecordService _recordService;
@@ -18,14 +18,14 @@ namespace EXE_PET_HUB.API.Controllers
             _emailService = emailService;
         }
 
-        [HttpGet]
+        [HttpGet("medical_records")]
         public async Task<ActionResult<List<MedicalRecordDto>>> GetAll()
         {
             var records = await _recordService.GetAllAsync();
             return Ok(records);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("medical_record/{id}")]
         public async Task<ActionResult<MedicalRecordDto>> GetById(string id)
         {
             var record = await _recordService.GetByIdAsync(id);
@@ -33,14 +33,28 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(record);
         }
 
-        [HttpPost]
+        [HttpGet("medical_records/pet/{petId}")]
+        public async Task<ActionResult<List<MedicalRecordDto>>> GetByPetId(string petId)
+        {
+            var records = await _recordService.GetByPetIdAsync(petId);
+            return Ok(records);
+        }
+
+        [HttpGet("medical_records/appointment/{appointmentId}")]
+        public async Task<ActionResult<List<MedicalRecordDto>>> GetByAppointmentId(string appointmentId)
+        {
+            var records = await _recordService.GetByAppointmentIdAsync(appointmentId);
+            return Ok(records);
+        }
+
+        [HttpPost("medical_record")]
         public async Task<ActionResult> Create(CreateMedicalRecordDto dto)
         {
             var record = await _recordService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = record.Id }, record);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("medical_record/{id}")]
         public async Task<ActionResult> Update(string id, UpdateMedicalRecordDto dto)
         {
            var record = await _recordService.Update(id, dto);

@@ -14,19 +14,15 @@ namespace EXE_PET_HUB.Domain.Entities
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-
         public Guid CustomerId { get; set; }
         public string PetId { get; set; }
-
         public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
 
         [Column(TypeName = "varchar(100)")]
         public string? AppointmentNote { get; set; }
-
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Confirmed;
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

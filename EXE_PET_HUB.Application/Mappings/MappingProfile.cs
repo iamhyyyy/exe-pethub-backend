@@ -23,6 +23,12 @@ namespace EXE_PET_HUB.Application.Mappings
             CreateMap<CreateItemDto, Item>();
             CreateMap<UpdateItemDto, Item>();
 
+            // Cấu hình map 2 chiều cho appointment
+            CreateMap<Appointment, AppointmentDto>().ReverseMap();
+            CreateMap<CreateAppointmentDto, Appointment>();
+            CreateMap<UpdateAppointmentDto, Appointment>();
+
+            
             CreateMap<Invoice, InvoiceDto>()
             .ForMember(dest => dest.PetName,
                 opt => opt.MapFrom(src => src.Pet!.Name))
