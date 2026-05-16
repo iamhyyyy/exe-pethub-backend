@@ -17,7 +17,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<User> _userManager;//cái này là ASP .NetCore có sẵn ha
+        private readonly UserManager<User> _userManager; //cái này là ASP .NetCore có sẵn ha
         private readonly SignInManager<User> _signInManager;//cái này là ASP .NetCore có sẵn ha
         private readonly IConfiguration _configuration;//cái này là ASP .NetCore có sẵn ha
         private readonly IEmailService _emailService; 

@@ -1,7 +1,8 @@
-﻿using EXE_PET_HUB.Domain.Entities;
-using EXE_PET_HUB.Application.Interfaces;
+﻿using AutoMapper;
 using EXE_PET_HUB.Application.DTOs;
-using AutoMapper;
+using EXE_PET_HUB.Application.Interfaces;
+using EXE_PET_HUB.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EXE_PET_HUB.Application.Services
 {
@@ -9,25 +10,47 @@ namespace EXE_PET_HUB.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<List<UserDto>> GetAllAsync()
         {
             var users = await _unitOfWork.UserRepository.GetAllAsync();
 
-            return _mapper.Map<List<UserDto>>(users);
+            var dtoUsers = _mapper.Map<List<UserDto>>(users);
+
+            foreach (var user in users)
+            {
+                foreach (var dtoUser in dtoUsers)
+                {
+                    if (dtoUser.Id == user.Id)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        dtoUser.Role = roles.FirstOrDefault() ?? "Customer";
+                    }
+                }
+            }
+
+            return dtoUsers;
         }
 
         public async Task<UserDto?> GetByIdAsync(Guid id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (user == null) return null;
 
-            return user == null ? null : _mapper.Map<UserDto>(user);
+            var dto = _mapper.Map<UserDto>(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            dto.Role = roles.FirstOrDefault() ?? "Customer";
+    
+            return dto;
         }
 
         //public async Task<PetDto> CreateAsync(CreatePetDto dto)

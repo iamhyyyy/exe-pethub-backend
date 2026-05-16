@@ -1,4 +1,5 @@
 using EXE_PET_HUB.Domain.Enums;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace EXE_PET_HUB.Application.DTOs
 {
@@ -9,10 +10,11 @@ namespace EXE_PET_HUB.Application.DTOs
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? UserName { get; set; }
-        public PlanType Plan { get; set; } = PlanType.Free;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public PlanType Plan { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public bool EmailConfirmed { get; set; }
+        public string Role { get; set; }
     }
 
     public class CreateUserDto
