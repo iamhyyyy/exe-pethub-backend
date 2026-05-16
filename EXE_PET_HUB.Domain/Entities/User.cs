@@ -19,9 +19,6 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Nếu bạn muốn lưu tên thật (vì Identity mặc định không có FirstName/LastName)
-        
-
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
     }
 }

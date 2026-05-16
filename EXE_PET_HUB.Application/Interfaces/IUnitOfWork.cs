@@ -10,5 +10,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         IInvoiceRepository InvoiceRepository { get; }
         IAppointmentRepository AppointmentRepository { get; }
         IAppointmentReminderRepository AppointmentReminderRepository { get; }
+        IUserRepository UserRepository { get; }
     }
 }

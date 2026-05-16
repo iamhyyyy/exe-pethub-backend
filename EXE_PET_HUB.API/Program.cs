@@ -40,7 +40,7 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<AppointmentService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
-            //builder.Services.AddScoped<AppointmentReminderService>();
+            builder.Services.AddScoped<AppointmentReminderService>();
             builder.Services.AddScoped<IAppointmentReminderRepository, AppointmentReminderRepository>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -50,6 +50,9 @@ namespace EXE_PET_HUB.API
 
             builder.Services.AddScoped<IInvoiceService, InvoiceService>();
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -161,11 +164,11 @@ namespace EXE_PET_HUB.API
             });
 
             //environment variable for port, default to 8080 if not set
-            //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            //app.Run($"http://0.0.0.0:{port}");
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            app.Run();
+            //app.Run();
         }
     }
 }
