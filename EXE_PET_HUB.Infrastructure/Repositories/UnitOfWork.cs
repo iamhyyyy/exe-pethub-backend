@@ -11,7 +11,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private IPetRepository? _petRepository;
         private IMedicalRecordRepository? _medicalRecordRepository;
         private IItemRepository? _itemRepository;
-        private IInvoiceRepository _invoiceRepository;
+        private IInvoiceRepository? _invoiceRepository;
 
         public UnitOfWork(AppDbContext context)
         {
