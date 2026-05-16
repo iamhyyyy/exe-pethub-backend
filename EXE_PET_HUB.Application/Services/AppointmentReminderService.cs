@@ -104,14 +104,13 @@ namespace EXE_PET_HUB.Application.Services
             //nếu thời gian hiện tại đã vượt quá deadline để tạo remind (1 giờ trước thời gian bắt đầu của appointment) thì không được update remind
             DateTime appointmentDateTime = tmpAppoint.AppointmentDate.ToDateTime(tmpAppoint.StartTime);
             DateTime deadlineToCreateReminder = appointmentDateTime.AddHours(-1);
-            if (DateTime.Now >= deadlineToCreateReminder)
+            if (DateTime.UtcNow >= deadlineToCreateReminder)
             {
                 throw new Exception("Cannot update reminder less than 1 hour before the appointment.");
             }
 
-            var updateRemind = _mapper.Map<AppointmentReminder>(dto);
-            updateRemind.Id = id;
-            _unitOfWork.AppointmentReminderRepository.Update(updateRemind);
+            _mapper.Map(dto, remind);
+            _unitOfWork.AppointmentReminderRepository.Update(remind);
             await _unitOfWork.CompleteAsync();
             return true;
         }
