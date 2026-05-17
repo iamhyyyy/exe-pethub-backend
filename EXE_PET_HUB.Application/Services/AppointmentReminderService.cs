@@ -61,7 +61,7 @@ namespace EXE_PET_HUB.Application.Services
             //nếu thời gian hiện tại đã vượt quá deadline để tạo remind (1 giờ trước thời gian bắt đầu của appointment) thì không được tạo remind
             DateTime appointmentDateTime = remind.Appointment.AppointmentDate.ToDateTime(remind.Appointment.StartTime);
             DateTime deadlineToCreateReminder = appointmentDateTime.AddHours(-1);
-            if (DateTime.UtcNow >= deadlineToCreateReminder)
+            if (DateTime.UtcNow.AddHours(7) >= deadlineToCreateReminder)
             {
                 throw new Exception("Cannot create reminder less than 1 hour before the appointment.");
             }
@@ -104,7 +104,7 @@ namespace EXE_PET_HUB.Application.Services
             //nếu thời gian hiện tại đã vượt quá deadline để tạo remind (1 giờ trước thời gian bắt đầu của appointment) thì không được update remind
             DateTime appointmentDateTime = tmpAppoint.AppointmentDate.ToDateTime(tmpAppoint.StartTime);
             DateTime deadlineToCreateReminder = appointmentDateTime.AddHours(-1);
-            if (DateTime.UtcNow >= deadlineToCreateReminder)
+            if (DateTime.UtcNow.AddHours(7) >= deadlineToCreateReminder)
             {
                 throw new Exception("Cannot update reminder less than 1 hour before the appointment.");
             }
@@ -126,5 +126,7 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
+
+
     }
 }

@@ -23,8 +23,8 @@ namespace EXE_PET_HUB.Domain.Entities
         [Column(TypeName = "varchar(100)")]
         public string? AppointmentNote { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Confirmed;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
         [ForeignKey(nameof(CustomerId))]
         public User Customer { get; set; } = null!;

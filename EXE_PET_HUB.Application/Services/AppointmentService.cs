@@ -54,8 +54,8 @@ namespace EXE_PET_HUB.Application.Services
             var appointment = _mapper.Map<Appointment>(dto);
             appointment.Id = Guid.NewGuid().ToString();
             appointment.Status = AppointmentStatus.Confirmed;
-            appointment.CreatedAt = DateTime.UtcNow;
-            appointment.UpdatedAt = DateTime.UtcNow;
+            appointment.CreatedAt = DateTime.UtcNow.AddHours(7);
+            appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
             await _unitOfWork.AppointmentRepository.AddAsync(appointment);
             await _unitOfWork.CompleteAsync();
 
@@ -72,7 +72,7 @@ namespace EXE_PET_HUB.Application.Services
             if (appointment == null) return false;
 
             _mapper.Map(dto, appointment);
-            appointment.UpdatedAt = DateTime.UtcNow;
+            appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CompleteAsync();

@@ -97,7 +97,7 @@ namespace EXE_PET_HUB.Application.Services
                 PetId = petId,
                 AppointmentId = appointmentId,
                 CustomerId = customerId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(7),
                 Details = new List<InvoiceDetail>()
             };
 

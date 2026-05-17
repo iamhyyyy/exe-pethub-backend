@@ -152,13 +152,13 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     PetId = selectedPet.Id,
                     // Quan trọng: CustomerId phải khớp với chủ của con Pet đó
                     CustomerId = selectedPet.CustomerId,
-                    AppointmentDate = DateOnly.FromDateTime(DateTime.Now.AddDays(i)), // Lịch hẹn từ mai trở đi
+                    AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7).AddDays(i)), // Lịch hẹn từ mai trở đi
                     StartTime = new TimeOnly(8 + (i % 8), 0), // Giờ bắt đầu từ 8h sáng rải rác ra
                     EndTime = new TimeOnly(9 + (i % 8), 0),
                     AppointmentNote = $"Lịch hẹn kiểm tra sức khỏe định kỳ lần thứ {i}",
                     Status = (AppointmentStatus)(random.Next(0, 3)), // Random status: Confirmed, Completed, Cancelled
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 });
             }
 
@@ -202,7 +202,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     Treatment = treatments[random.Next(treatments.Length)],
                     Prescription = prescriptions[random.Next(prescriptions.Length)],
                     MedicalRecordNote = "Thú cưng hợp tác tốt trong quá trình thăm khám.",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7)
                 });
             }
 
@@ -332,8 +332,8 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     PaymentMethod = "vnpay",
                     TransactionNo = "VNP" + random.Next(100000, 999999).ToString(),
                     PaidAt = DateTime.UtcNow.AddHours(-random.Next(1, 100)),
-                    CreatedAt = DateTime.UtcNow.AddDays(-5),
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 });
             }
 
@@ -368,7 +368,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     // Thời gian nhắc là 2 tiếng trước khi cuộc hẹn bắt đầu
                     ReminderTime = appointmentDateTime.AddHours(-2),
                     Status = ReminderStatus.Pending, // Mặc định là đang chờ gửi
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7)
                 });
             }
 

@@ -1,9 +1,8 @@
-﻿using EXE_PET_HUB.Application.DTOs;
-using EXE_PET_HUB.Application.Interfaces;
+﻿using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
+using EXE_PET_HUB.Domain.Enums;
 using EXE_PET_HUB.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using MimeKit.Encodings;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
@@ -21,6 +20,15 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         public async Task<List<AppointmentReminder>> GetAllAsync()
         {
             return await _context.AppointmentReminders.Include(r => r.Appointment).ToListAsync();
+        }
+
+        public async Task<List<AppointmentReminder>> GetPendingForSendAsync(DateTime now)
+        {
+            return await _context.AppointmentReminders
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Customer)
+                .Where(r => r.Status == ReminderStatus.Pending && r.ReminderTime <= now)
+                .ToListAsync();
         }
     } 
 }
