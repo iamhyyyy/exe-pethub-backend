@@ -1,35 +1,40 @@
 ﻿using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace EXE_PET_HUB.API.Workers;
 
 public class AppointmentReminderWorker : BackgroundService
 {
     private readonly IReminderService _reminderService;
-    private readonly TimeSpan _period = TimeSpan.FromMinutes(5); // Định kỳ 5 phút quét 1 lần
+    private readonly ILogger<AppointmentReminderWorker> _logger;
+    private static readonly TimeSpan Period = TimeSpan.FromSeconds(30);
 
-    public AppointmentReminderWorker(IReminderService reminderService)
+    public AppointmentReminderWorker(
+        IReminderService reminderService,
+        ILogger<AppointmentReminderWorker> logger)
     {
         _reminderService = reminderService;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("AppointmentReminderWorker started (interval: {Interval}s)", Period.TotalSeconds);
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                // 1. Tự động quét và add thêm reminder chưa tồn tại
                 await _reminderService.SyncRemindersAsync();
-
-                // 2. Quét xem có lịch nào cần gửi mail thì gửi luôn
                 await _reminderService.SendPendingRemindersAsync();
             }
             catch (Exception ex)
             {
-                // Thêm log lỗi ở đây để theo dõi nếu Worker bị sập
+                _logger.LogError(ex, "AppointmentReminderWorker cycle failed");
             }
 
-            // Chờ 5 phút trước khi thực hiện lượt quét tiếp theo
-            await Task.Delay(_period, stoppingToken);
+            await Task.Delay(Period, stoppingToken);
         }
     }
 }

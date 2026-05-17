@@ -27,6 +27,8 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             return await _context.AppointmentReminders
                 .Include(r => r.Appointment)
                     .ThenInclude(a => a.Customer)
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Pet)
                 .Where(r => r.Status == ReminderStatus.Pending && r.ReminderTime <= now)
                 .ToListAsync();
         }
