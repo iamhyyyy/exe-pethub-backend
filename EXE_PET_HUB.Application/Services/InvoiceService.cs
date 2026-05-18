@@ -76,8 +76,11 @@ namespace EXE_PET_HUB.Application.Services
             if (customerId.HasValue)
             {
                 var customers = await _unitOfWork.Repository<User>().FindAsync(u => u.Id == customerId.Value);
-                if (!customers.Any()) throw new Exception("Invalid CustomerId");
-                customer = customers.First();
+                customer = customers.FirstOrDefault();
+                if (customer == null) 
+                {
+                    throw new Exception("Invalid CustomerId"); 
+                }
             }
 
             // Fetch Items to get their real prices and names
