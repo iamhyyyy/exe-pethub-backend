@@ -58,6 +58,7 @@ namespace EXE_PET_HUB.API
             builder.Services.AddSingleton<IReminderService, ReminderService>();
             builder.Services.AddHostedService<AppointmentReminderWorker>();
 
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             // Add services to the container.
             builder.Services.AddControllers();
 

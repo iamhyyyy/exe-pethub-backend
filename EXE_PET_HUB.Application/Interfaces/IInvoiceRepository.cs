@@ -10,9 +10,9 @@ namespace EXE_PET_HUB.Application.Interfaces
 {
     public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
-        Task<List<Invoice>> GetAllInvoicesWithDetailsAsync();
-        Task<List<Invoice>> GetAllInvoicesDetailsByCusIDAsync(Guid customerID);
+        Task<List<Invoice>> GetAllInvoicesAsync();
+        Task<List<Invoice>> GetAllInvoicesByCusIDAsync(Guid customerID);
         Task<List<InvoiceDetail>> GetDetailsAsync(string InvoiceID);
-        Task<Invoice> GetInvoiceWithDetailsAsync(string invoiceId);
+        Task<Invoice> GetInvoiceAsync(string invoiceId);
     }
 }

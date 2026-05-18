@@ -19,7 +19,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<List<Invoice>> GetAllInvoicesWithDetailsAsync()
+        public async Task<List<Invoice>> GetAllInvoicesAsync()
         {
             return await _context.Invoices
                 .Include(i => i.Pet)
@@ -28,7 +28,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Invoice> GetInvoiceWithDetailsAsync(string invoiceId)
+        public async Task<Invoice> GetInvoiceAsync(string invoiceId)
         {
             return await _context.Invoices
                 .Include(i => i.Pet)
@@ -37,7 +37,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .Where(i => i.Id == invoiceId)
                 .SingleOrDefaultAsync();
         }
-        public async Task<List<Invoice>> GetAllInvoicesDetailsByCusIDAsync(Guid customerId)
+        public async Task<List<Invoice>> GetAllInvoicesByCusIDAsync(Guid customerId)
         {
             return await _context.Invoices
                 .Include(i => i.Pet)

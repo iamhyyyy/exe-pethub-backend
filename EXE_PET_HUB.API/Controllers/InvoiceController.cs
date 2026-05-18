@@ -38,7 +38,7 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(items);
         }
 
-        [HttpGet("invoice/{invoiceId}")]
+        [HttpGet("{invoiceId}")]
         public async Task<ActionResult<List<InvoiceDetailsDto>>> GetDetailByInvoiceID(string invoiceId)
         {
             var items = await _invoiceService.GetInvoiceDetailsAsync(invoiceId);

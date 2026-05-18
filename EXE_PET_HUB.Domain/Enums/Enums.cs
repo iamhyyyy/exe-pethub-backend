@@ -46,4 +46,12 @@ namespace EXE_PET_HUB.Domain.Enums
         Sent,
         Failed
     }
+
+    public enum InvoiceStatus
+    {
+        Pending,
+        Paid,
+        Cancelled,
+        Failed
+    }
 }

@@ -25,19 +25,19 @@ namespace EXE_PET_HUB.Application.Services
 
         public async Task<List<InvoiceDto>> GetAllAsync()
         {
-            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesWithDetailsAsync();
+            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesAsync();
             return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
         }
 
         public async Task<InvoiceDto?> GetByIdAsync(string id)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetInvoiceWithDetailsAsync(id);
+            var items = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(id);
             return items == null ? null : _mapper.Map<InvoiceDto>(items);
         }
 
         public async Task<List<InvoiceDto>> GetAllByCusIDAsync(Guid cusID)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesDetailsByCusIDAsync(cusID);
+            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesByCusIDAsync(cusID);
             return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
         }
 
@@ -129,7 +129,7 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
 
             // Fetch the fully populated invoice to map navigation properties correctly
-            var savedInvoice = await _unitOfWork.InvoiceRepository.GetInvoiceWithDetailsAsync(invoice.Id);
+            var savedInvoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(invoice.Id);
 
             // Send Email if Customer exists and has email
             if (customer != null && !string.IsNullOrEmpty(customer.Email))

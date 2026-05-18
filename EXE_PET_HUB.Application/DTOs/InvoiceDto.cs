@@ -15,6 +15,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string? AppointmentNote { get; set; }
         public string? CustomerName { get; set; }
         public decimal TotalAmount { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
  
     }
