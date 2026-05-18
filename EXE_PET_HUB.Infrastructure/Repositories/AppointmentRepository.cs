@@ -18,6 +18,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             return await _context.Appointments
                 .Include(p => p.Customer)
                 .Include(p => p.Pet)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

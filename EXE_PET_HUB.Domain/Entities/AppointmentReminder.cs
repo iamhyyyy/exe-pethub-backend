@@ -18,7 +18,7 @@ namespace EXE_PET_HUB.Domain.Entities
         public string AppointmentId { get; set; }
         public DateTime ReminderTime { get; set; }
         public ReminderStatus Status { get; set; } 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
         [ForeignKey(nameof(AppointmentId))]
         public Appointment Appointment { get; set; } = null!;

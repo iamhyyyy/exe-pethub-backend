@@ -24,8 +24,8 @@ namespace EXE_PET_HUB.Domain.Entities
         public string? TransactionNo { get; set; }
         public DateTime? PaidAt { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
         [ForeignKey(nameof(ManagerId))]
         public User Manager { get; set; } = null!;

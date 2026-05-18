@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EXE_PET_HUB.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260515170949_ChangePriceTypeToDecimal")]
-    partial class ChangePriceTypeToDecimal
+    [Migration("20260517133634_changeTimeUTCToVN")]
+    partial class changeTimeUTCToVN
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

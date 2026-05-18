@@ -16,8 +16,6 @@ namespace EXE_PET_HUB.Application.DTOs
     {
         public string AppointmentId { get; set; }
         public DateTime ReminderTime { get; set; }
-        public ReminderStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 
     public class UpdateAppointmentReminderDto

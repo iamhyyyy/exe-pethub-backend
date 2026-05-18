@@ -15,12 +15,9 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public PlanType Plan { get; set; } = PlanType.Free;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Nếu bạn muốn lưu tên thật (vì Identity mặc định không có FirstName/LastName)
-        
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
     }
