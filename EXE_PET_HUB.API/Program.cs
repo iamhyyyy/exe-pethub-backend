@@ -77,6 +77,11 @@ namespace EXE_PET_HUB.API
             //Add AutoMapper
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+            builder.Services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             //Config JWT Authentication
             builder.Services.AddAuthentication(options =>
             {

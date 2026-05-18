@@ -14,7 +14,7 @@ namespace EXE_PET_HUB.API.Controllers
         {
             _itemService = itemService;
         }
-        [HttpGet]
+        [HttpGet("item")]
         public async Task<ActionResult<List<ItemDto>>> GetAll()
         {
             var items = await _itemService.GetAllAsync();
