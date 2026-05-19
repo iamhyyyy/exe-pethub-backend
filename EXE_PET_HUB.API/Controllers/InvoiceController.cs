@@ -38,7 +38,7 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(items);
         }
 
-        [HttpGet("{invoiceId}")]
+        [HttpGet("invoice-detail/{invoiceId}")]
         public async Task<ActionResult<List<InvoiceDetailsDto>>> GetDetailByInvoiceID(string invoiceId)
         {
             var items = await _invoiceService.GetInvoiceDetailsAsync(invoiceId);
@@ -50,6 +50,20 @@ namespace EXE_PET_HUB.API.Controllers
         {
             var createdInvoice = await _invoiceService.CreateInvoiceAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdInvoice.Id }, createdInvoice);
+        }
+
+        [HttpPatch("confirm-transaction/{invoiceid}")]
+        public async Task<IActionResult> MarkAsPaid(string invoiceid)
+        {
+            try
+            {
+                var result = await _invoiceService.MarkAsPaidAsync(invoiceid);
+                return Ok(new { message = "Invoice marked as Paid successfully", invoiceId = invoiceid });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -12,5 +12,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         Task<List<InvoiceDto>> GetAllByCusIDAsync(Guid cusID);
         Task<List<InvoiceDetailsDto>> GetInvoiceDetailsAsync(string invoiceID);
         Task<ResponseInvoiceOfCreateDto> CreateInvoiceAsync(CreateInvoiceDto dto);
+        Task<bool> MarkAsPaidAsync(string invoiceId);
     }
 }

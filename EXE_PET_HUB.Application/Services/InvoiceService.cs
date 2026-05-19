@@ -1,6 +1,7 @@
 using AutoMapper;
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
+using EXE_PET_HUB.Domain.Enums;
 using EXE_PET_HUB.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,23 @@ namespace EXE_PET_HUB.Application.Services
         {
             var items = await _unitOfWork.InvoiceRepository.GetDetailsAsync(invoiceID);
             return items == null ? null : _mapper.Map<List<InvoiceDetailsDto>>(items);
+        }
+
+        public async Task<bool> MarkAsPaidAsync(string invoiceId)
+        {
+            // 1. Lấy invoice theo ID
+            var invoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(invoiceId);
+            if (invoice == null)
+                throw new Exception("Invoice not found");
+            // 2. Kiểm tra trạng thái hiện tại — chỉ cho phép Pending → Paid
+            if (invoice.Status != InvoiceStatus.Pending)
+                throw new Exception($"Cannot mark as paid. Current status is: {invoice.Status}");
+            // 3. Cập nhật status
+            invoice.Status = InvoiceStatus.Paid;
+            // 4. Gọi Update từ GenericRepository (đã có sẵn)
+             _unitOfWork.InvoiceRepository.Update(invoice);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<ResponseInvoiceOfCreateDto> CreateInvoiceAsync(CreateInvoiceDto dto)
