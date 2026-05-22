@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Application.DTOs.VnPay;
+using EXE_PET_HUB.Application.DTOs.VnPay;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -72,9 +72,9 @@ namespace EXE_PET_HUB.Infrastructure.Libraries
                     return ipAddress;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "127.0.0.1";
             }
 
             return "127.0.0.1";

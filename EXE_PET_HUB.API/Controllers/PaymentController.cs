@@ -18,12 +18,18 @@ namespace EXE_PET_HUB.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model)
         {
-            var url = await _vnPayService.CreatePaymentUrl(model, HttpContext);
-
-            return Ok(new
+            try
             {
-                paymentUrl = url
-            });
+                var url = await _vnPayService.CreatePaymentUrl(model, HttpContext);
+                return Ok(new
+                {
+                    paymentUrl = url
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
