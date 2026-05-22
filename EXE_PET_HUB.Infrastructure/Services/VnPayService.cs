@@ -55,7 +55,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
             pay.AddRequestData("vnp_OrderInfo", $"{model.Name} {model.OrderDescription} {(long)Amount}");
             pay.AddRequestData("vnp_OrderType", model.OrderType);
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            //pay.AddRequestData("vnp_IpnUrl", ipnUrl);
+            pay.AddRequestData("vnp_IpnUrl", ipnUrl);
             pay.AddRequestData("vnp_TxnRef", txnRef);
 
             var paymentUrl =
