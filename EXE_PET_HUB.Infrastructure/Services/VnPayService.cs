@@ -30,7 +30,6 @@ namespace EXE_PET_HUB.Infrastructure.Services
             //var tick = DateTime.Now.AddHours(7).Ticks.ToString();
             var pay = new VnPayLibrary();
             var urlCallBack = _configuration["Vnpay:PaymentBackReturnUrl"];
-            var ipnUrl = _configuration["Vnpay:PaymentIpnUrl"];
             var infoInvoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(model.InvoiceId);
 
             if (infoInvoice == null)
@@ -55,7 +54,6 @@ namespace EXE_PET_HUB.Infrastructure.Services
             pay.AddRequestData("vnp_OrderInfo", $"{model.Name} {model.OrderDescription} {(long)Amount}");
             pay.AddRequestData("vnp_OrderType", model.OrderType);
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_IpnUrl", ipnUrl);
             pay.AddRequestData("vnp_TxnRef", txnRef);
 
             var paymentUrl =
