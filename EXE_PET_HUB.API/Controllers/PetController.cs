@@ -42,6 +42,13 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(pets);
         }
 
+        [HttpGet("pets/count/customer/{customerId}")]
+        public async Task<ActionResult<int>> CountPetByCustomerId(Guid customerId)
+        {
+            var count = await _petService.CountPetByCustomerIdAsync(customerId);
+            return Ok(count);
+        }
+
         [HttpPost("pet")]
         public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
         {
