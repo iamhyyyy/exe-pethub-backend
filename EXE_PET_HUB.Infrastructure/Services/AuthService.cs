@@ -125,6 +125,76 @@ namespace EXE_PET_HUB.Infrastructure.Services
 
             return (true, message);
         }
+
+        public async Task<(bool Success, string Message)> RegisterManagerAsync(RegisterRequest request)
+        {
+            // 2. Kiểm tra email đã tồn tại chưa
+            var existingEmail = await _userManager.FindByEmailAsync(request.Email);
+            if (existingEmail != null)
+                return (false, "Email already exists");
+            // 3. Tạo User mới — Identity tự hash password,
+            var user = new User
+            {
+                UserName = request.UserName,
+                Email = request.Email,
+                EmailConfirmed = true,  // ← Chưa xác nhận, phải click link trong mail
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+            };
+            var result = await _userManager.CreateAsync(user, request.Password); /* chỗ này password thì Asp.Net yêu cầu t nhất 6 ký tự
+                                                                                  Có chữ hoa, chữ thường, Có số, Có ký tự đặc biệt(@, !, #...)*/
+            if (!result.Succeeded)
+            {
+                // Identity trả về lỗi cụ thể (password yếu, thiếu ký tự đặc biệt...)
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return (false, errors);
+            }
+            // 4. Gán role mặc định là "customer"
+            await _userManager.AddToRoleAsync(user, "manager");
+
+            //// 5. Tạo token xác nhận email từ ASP.NET Identity
+            //var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var encodedToken = WebUtility.UrlEncode(confirmToken); // Encode vì token có ký tự đặc biệt
+
+            //// 6. Tạo link xác nhận — trỏ về API endpoint confirm-email
+            var baseUrl = _configuration["AppSettings:BaseUrl"];
+            var directLink = $"{baseUrl}/auth/login";
+
+            // 7. Gửi mail chứa link xác nhận
+            var emailSent = true;
+            try
+            {
+                var subject = "[PetHub] Confirm your account 🐾";
+                var body = $"""
+                    <h2>Hello {user.UserName}!</h2>
+                    <p>Your account has been successfully created on <strong>PetHub</strong>.</p>
+                    <p>Now you can login and start managing your pets.</p>
+                    <p>Your Email : {request.Email} </p>
+                    <p>Your Password : {request.Password} </p>
+                    <p>The Password is default by the system. You need to change your password</p>
+                    <br/>
+                    <a href="{directLink}" 
+                       style="background:#4CAF50;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;">
+                         Login
+                    </a>
+                    <br/><br/>
+                    <p><small>Link will expire in 24 hours. If you did not register, please ignore this email.</small></p>
+                    <p>Sincerely,<br/>PetHub Team 🐶🐱</p>
+                    """;
+
+                await _emailService.SendEmailAsync(user.Email, subject, body);
+            }
+            catch (Exception)
+            {
+                emailSent = false;
+            }
+
+            var message = emailSent
+                ? "Register successfully"
+                : "Register successfully! (Confirmation email could not be sent, please contact support)";
+
+            return (true, message);
+        }
         public async Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token)
         {
             // 1. Tìm user theo Id

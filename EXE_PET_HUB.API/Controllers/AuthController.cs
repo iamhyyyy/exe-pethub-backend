@@ -43,6 +43,16 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(new { message });
         }
 
+        [HttpPost("registerManager")]
+        public async Task<IActionResult> RegisterManager([FromBody] RegisterRequest request)
+        {
+            var (success, message) = await _authService.RegisterManagerAsync(request);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+
         // User click link trong email → gọi endpoint này
         // Link dạng: GET /api/auth/confirm-email?userId=xxx&token=yyy
         [HttpGet("confirm-email")]
