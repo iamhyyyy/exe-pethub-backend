@@ -91,7 +91,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
 
             // 6. Tạo link xác nhận — trỏ về API endpoint confirm-email
             var baseUrl = _configuration["AppSettings:BaseUrl"];
-            var confirmLink = $"{baseUrl}/api/Auth/confirm-email?userId={user.Id}&token={encodedToken}";
+            var confirmLink = $"{baseUrl}/api/auth/confirm-email?userId={user.Id}&token={encodedToken}";
 
             // 7. Gửi mail chứa link xác nhận
             var emailSent = true;
