@@ -207,10 +207,10 @@ namespace EXE_PET_HUB.Infrastructure.Services
                 return (true, "Email already confirmed. You can login now.");
 
             // 3. Decode token (vì khi gửi đã UrlEncode)
-            var decodedToken = WebUtility.UrlDecode(token);
+            //var decodedToken = WebUtility.UrlDecode(token);
 
             // 4. Gọi Identity để xác nhận — tự động set EmailConfirmed = true trong DB
-            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
