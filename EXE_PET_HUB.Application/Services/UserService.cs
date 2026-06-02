@@ -65,7 +65,6 @@ namespace EXE_PET_HUB.Application.Services
             // ① Lưu lại giá trị CŨ trước khi map
             var oldFirstName = user.FirstName;
             var oldLastName = user.LastName;
-            var oldPlan = user.Plan;
 
             _mapper.Map(dto, user);
             user.UpdatedAt = DateTime.UtcNow.AddHours(7);
@@ -75,13 +74,13 @@ namespace EXE_PET_HUB.Application.Services
 
             if (!string.IsNullOrEmpty(user.Email))
             {
-                await SendProfileUpdatedEmailAsync(user, oldFirstName, oldLastName, oldPlan);
+                await SendProfileUpdatedEmailAsync(user, oldFirstName, oldLastName);
             }
 
             return _mapper.Map<ResponeUserDto>(user);
         }
 
-        private async Task SendProfileUpdatedEmailAsync(User user,string? oldFirstName, string? oldLastName, PlanType oldPlan)
+        private async Task SendProfileUpdatedEmailAsync(User user,string? oldFirstName, string? oldLastName)
         {
             var changes = new List<string>();
 
@@ -91,8 +90,6 @@ namespace EXE_PET_HUB.Application.Services
             if (user.LastName != oldLastName)
                 changes.Add($"<li><strong>Last Name:</strong> {oldLastName ?? "—"} → {user.LastName ?? "—"}</li>");
 
-            if (user.Plan != oldPlan)
-                changes.Add($"<li><strong>Plan:</strong> {oldPlan} → {user.Plan}</li>");
 
             // Không có gì thay đổi thì không gửi mail
             if (!changes.Any()) return;
