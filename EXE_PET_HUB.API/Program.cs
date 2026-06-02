@@ -54,6 +54,7 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddSingleton<IReminderService, ReminderService>();

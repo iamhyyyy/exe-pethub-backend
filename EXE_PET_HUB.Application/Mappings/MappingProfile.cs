@@ -35,6 +35,8 @@ namespace EXE_PET_HUB.Application.Mappings
 
             // Cấu hình map 2 chiều cho user
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<UpdateUserDto, User>();         
+            CreateMap<User, ResponeUserDto>();         
 
             // Cấu hình map 2 chiều cho invoice
             CreateMap<Invoice, InvoiceDto>()
