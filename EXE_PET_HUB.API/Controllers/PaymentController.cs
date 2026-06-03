@@ -2,6 +2,7 @@ using EXE_PET_HUB.Application.DTOs.VnPay;
 using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -16,6 +17,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("OtpPolicy")]
         public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model)
         {
             try

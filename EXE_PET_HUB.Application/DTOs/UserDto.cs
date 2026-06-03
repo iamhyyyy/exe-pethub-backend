@@ -17,13 +17,19 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Role { get; set; }
     }
 
-    public class CreateUserDto
+    public class ResponeUserDto
     {
-
+        public Guid Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? UserName { get; set; }
+        public PlanType Plan { get; set; }
     }
 
     public class UpdateUserDto
     {
-
+        public Guid Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 }

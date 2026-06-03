@@ -29,7 +29,8 @@ namespace EXE_PET_HUB.Domain.Enums
     public enum ItemType
     {
         Service,
-        Product
+        Product,
+        Plan 
     }
 
     public enum PaymentStatus

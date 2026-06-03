@@ -1,6 +1,7 @@
 using EXE_PET_HUB.Application.DTOs.Auth;
 using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -14,6 +15,7 @@ namespace EXE_PET_HUB.API.Controllers
             _authService = authService;
         }
         [HttpPost("login")]
+        [EnableRateLimiting("OtpPolicy")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _authService.LoginAsync(request);
@@ -35,6 +37,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost("register")]
+        [EnableRateLimiting("OtpPolicy")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var (success, message) = await _authService.RegisterAsync(request);
@@ -43,9 +46,21 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(new { message });
         }
 
+        [HttpPost("registerManager")]
+        [EnableRateLimiting("OtpPolicy")]
+        public async Task<IActionResult> RegisterManager([FromBody] RegisterRequest request)
+        {
+            var (success, message) = await _authService.RegisterManagerAsync(request);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+
         // User click link trong email → gọi endpoint này
         // Link dạng: GET /api/auth/confirm-email?userId=xxx&token=yyy
         [HttpGet("confirm-email")]
+        [EnableRateLimiting("OtpPolicy")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))

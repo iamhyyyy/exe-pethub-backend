@@ -1,10 +1,9 @@
 
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
-using EXE_PET_HUB.Application.Services;
-using EXE_PET_HUB.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -12,13 +11,11 @@ namespace EXE_PET_HUB.API.Controllers
     [Route("api")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
-        private readonly IEmailService _emailService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService, IEmailService emailService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _emailService = emailService;
         }
 
         [HttpGet("users")]
@@ -36,20 +33,16 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(user);
         }
 
-        //[HttpPost("pet")]
-        //public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
-        //{
-        //    var pet = await _petService.CreateAsync(dto);
-        //    return CreatedAtAction(nameof(GetById), new { id = pet.Id }, pet);
-        //}
+        [HttpPut("user/{id}")]
+        
+        public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
+        {
+            if (id != dto.Id)
+                return BadRequest("Id mismatch");
 
-        //[HttpPatch("pet/{id}")]
-        //public async Task<ActionResult> Update(string id, UpdatePetDto dto)
-        //{
-        //    var pet = await _petService.Update(id, dto);
-        //    if (!pet) return NotFound();
-        //    return NoContent();
-        //}
+            var result = await _userService.UpdateAsync(dto);
+            return Ok(result);
+        }
 
     }
 

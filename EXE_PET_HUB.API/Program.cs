@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace EXE_PET_HUB.API
 {
@@ -53,6 +54,7 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddSingleton<IReminderService, ReminderService>();
@@ -62,6 +64,35 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IVnPayService, VnPayService>();
             // Add services to the container.
             builder.Services.AddControllers();
+            //AddRateLimiter
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.Response.ContentType = "application/json";
+
+                    await context.HttpContext.Response.WriteAsJsonAsync(
+                        new
+                        {
+                            success = false,
+                            message = "Too many requests. Please try again later."
+                        },
+                        cancellationToken: token);
+                };
+
+                options.AddPolicy("OtpPolicy", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromSeconds(30),
+                            QueueLimit = 0
+                        }));
+            });
 
             //Add DbContext SQL
             //builder.Services.AddDbContext<AppDbContext>(options =>
@@ -162,9 +193,10 @@ namespace EXE_PET_HUB.API
 
             app.UseHttpsRedirection();
 
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
 
             app.MapControllers();
 

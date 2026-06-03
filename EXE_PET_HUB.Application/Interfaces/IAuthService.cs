@@ -10,7 +10,8 @@ namespace EXE_PET_HUB.Application.Interfaces
     public interface IAuthService
     {
         Task<LoginResponse?> LoginAsync(LoginRequest request);                         // đăng nhập
-        Task<(bool Success, string Message)> RegisterAsync(RegisterRequest request);    // đăng ký
+        Task<(bool Success, string Message)> RegisterAsync(RegisterRequest request);
+        Task<(bool Success, string Message)> RegisterManagerAsync(RegisterRequest request);// đăng ký
         Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token); // xác nhận email
     }
 }
