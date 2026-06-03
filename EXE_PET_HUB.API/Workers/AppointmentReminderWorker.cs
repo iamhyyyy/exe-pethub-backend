@@ -1,6 +1,4 @@
 ﻿using EXE_PET_HUB.Application.Interfaces;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace EXE_PET_HUB.API.Workers;
 
@@ -8,7 +6,7 @@ public class AppointmentReminderWorker : BackgroundService
 {
     private readonly IReminderService _reminderService;
     private readonly ILogger<AppointmentReminderWorker> _logger;
-    private static readonly TimeSpan Period = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan Period = TimeSpan.FromMinutes(30);
 
     public AppointmentReminderWorker(
         IReminderService reminderService,

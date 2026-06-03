@@ -8,5 +8,7 @@ namespace EXE_PET_HUB.Application.Interfaces
 
         Task<List<Appointment>> GetByPetIdAsync(string petId);
 
+        Task<List<Appointment>> GetConfirmedAppointments();
+
     }
 }
