@@ -22,5 +22,10 @@ namespace EXE_PET_HUB.Application.Interfaces
         /// Hủy payment link theo orderCode
         /// </summary>
         Task<object> CancelPaymentAsync(long orderCode);
+
+        /// <summary>
+        /// Tạo payment link PayOS cho Manager mua gói Premium
+        /// </summary>
+        Task<string> CreateStorePackageCheckoutUrlAsync(DTOs.StorePackage.CreateStorePackageCheckoutDto dto);
     }
 }

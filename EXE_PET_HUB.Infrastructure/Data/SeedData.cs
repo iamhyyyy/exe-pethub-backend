@@ -302,9 +302,9 @@ namespace EXE_PET_HUB.Infrastructure.Data
             // Các gói dịch vụ mẫu
             var packages = new[]
             {
-                new { Name = "Gói Cơ Bản (1 Tháng)", Price = 500000.0 },
-                new { Name = "Gói Chuyên Nghiệp (6 Tháng)", Price = 2500000.0 },
-                new { Name = "Gói Doanh Nghiệp (1 Năm)", Price = 4500000.0 }
+                new { Name = "Gói Cơ Bản (1 Tháng)", Price = 500000.0, Duration = 30 },
+                new { Name = "Gói Chuyên Nghiệp (6 Tháng)", Price = 2500000.0, Duration = 180 },
+                new { Name = "Gói Doanh Nghiệp (1 Năm)", Price = 4500000.0, Duration = 365 }
             };
 
             foreach (var manager in managers)
@@ -317,6 +317,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     ManagerId = manager.Id,
                     PackageType = selectedPackage.Name,
                     Price = selectedPackage.Price,
+                    DurationInDays = selectedPackage.Duration,
                     Status = PaymentStatus.Completed, // Mặc định là đã thanh toán cho đẹp
                     PaymentMethod = "vnpay",
                     TransactionNo = "VNP" + random.Next(100000, 999999).ToString(),

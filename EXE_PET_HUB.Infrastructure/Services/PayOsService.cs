@@ -1,4 +1,5 @@
 using EXE_PET_HUB.Application.DTOs.PayOS;
+using EXE_PET_HUB.Application.DTOs.StorePackage;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Enums;
 using Microsoft.Extensions.Configuration;
@@ -85,7 +86,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
         {
             try
             {
-                // Bước 1: Deserialize JSON body thành Webhook object theo PayOS SDK v2
+                // Bước 1: Deserialize JSON body
                 var webhookPayload = JsonSerializer.Deserialize<Webhook>(jsonBody, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -93,29 +94,71 @@ namespace EXE_PET_HUB.Infrastructure.Services
 
                 if (webhookPayload == null) return false;
 
-                // Bước 2: PayOS SDK tự verify chữ ký HMAC
+                // Bước 2: Verify chữ ký HMAC
                 var data = await _payOS.Webhooks.VerifyAsync(webhookPayload);
 
                 if (data == null) return false;
 
-                // Bước 3: Tìm Invoice theo orderCode đã lưu
+                // Bước 3: Tìm Invoice trước
                 var invoice = await _unitOfWork.InvoiceRepository.GetInvoiceByOrderCodeAsync(data.OrderCode);
 
-                if (invoice == null) return false;
+                if (invoice != null)
+                {
+                    // ─── Xử lý Invoice (Customer thanh toán dịch vụ/sản phẩm) ───
+                    if (invoice.Status != InvoiceStatus.Pending) return false;
 
-                // Bước 4: Idempotency — chỉ xử lý nếu đang Pending
-                if (invoice.Status != InvoiceStatus.Pending) return false;
+                    invoice.Status = data.Code == "00"
+                        ? InvoiceStatus.Paid
+                        : InvoiceStatus.Failed;
 
-                // Bước 5: Cập nhật trạng thái — PayOS code "00" = thành công
-                invoice.Status = data.Code == "00"
-                    ? InvoiceStatus.Paid
-                    : InvoiceStatus.Failed;
+                    _unitOfWork.InvoiceRepository.Update(invoice);
+                    await _unitOfWork.CompleteAsync();
+                    return true;
+                }
 
-                // Bước 6: Lưu DB
-                _unitOfWork.InvoiceRepository.Update(invoice);
-                await _unitOfWork.CompleteAsync();
+                // Bước 4: Nếu không phải Invoice → tìm StorePackagePayment
+                var package = await _unitOfWork.StorePackageRepository.GetByOrderCodeAsync(data.OrderCode);
 
-                return true;
+                if (package != null)
+                {
+                    // ─── Xử lý StorePackagePayment (Manager mua gói Premium) ───
+                    if (package.Status != PaymentStatus.Pending) return false;
+
+                    if (data.Code == "00")
+                    {
+                        package.Status = PaymentStatus.Completed;
+                        package.PaidAt = DateTime.UtcNow.AddHours(7);
+                        package.UpdatedAt = DateTime.UtcNow.AddHours(7);
+
+                        // Upgrade Manager.Plan = Premium + set ngày hết hạn
+                        var manager = await _unitOfWork.UserRepository.GetByIdAsync(package.ManagerId);
+                        if (manager != null)
+                        {
+                            manager.Plan = PlanType.Premium;
+
+                            // Nếu Manager đã có gói Premium chưa hết hạn thì cộng dồn, ngược lại tính từ hôm nay
+                            var baseDate = (manager.PremiumExpiredAt.HasValue && manager.PremiumExpiredAt > DateTime.UtcNow)
+                                ? manager.PremiumExpiredAt.Value
+                                : DateTime.UtcNow.AddHours(7);
+
+                            manager.PremiumExpiredAt = baseDate.AddDays(package.DurationInDays);
+                            manager.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                            _unitOfWork.UserRepository.Update(manager);
+                        }
+                    }
+                    else
+                    {
+                        package.Status = PaymentStatus.Failed;
+                        package.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                    }
+
+                    _unitOfWork.StorePackageRepository.Update(package);
+                    await _unitOfWork.CompleteAsync();
+                    return true;
+                }
+
+                // Không tìm thấy trong cả 2 bảng
+                return false;
             }
             catch
             {
@@ -133,6 +176,58 @@ namespace EXE_PET_HUB.Infrastructure.Services
         public async Task<object> CancelPaymentAsync(long orderCode)
         {
             return await _payOS.PaymentRequests.CancelAsync(orderCode);
+        }
+
+        // ─── API 5: Tạo PayOS checkout URL cho gói Manager ─────────────────────────
+        public async Task<string> CreateStorePackageCheckoutUrlAsync(CreateStorePackageCheckoutDto dto)
+        {
+            // 1. Lấy thông tin gói
+            var package = await _unitOfWork.StorePackageRepository.GetByIdAsync(dto.PackageId);
+            if (package == null)
+                throw new Exception($"Không tìm thấy gói '{dto.PackageId}'.");
+
+            if (package.Status != PaymentStatus.Pending)
+                throw new Exception($"Gói đang ở trạng thái '{package.Status}', không thể tạo thanh toán.");
+
+            // 2. Sinh orderCode duy nhất
+            var random = new Random();
+            long orderCode = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 10 + random.Next(0, 10);
+
+            // 3. Lưu orderCode vào package
+            package.PayOsOrderCode = orderCode;
+            package.UpdatedAt = DateTime.UtcNow.AddHours(7);
+            _unitOfWork.StorePackageRepository.Update(package);
+            await _unitOfWork.CompleteAsync();
+
+            // 4. Build description
+            var description = RemoveDiacritics($"Mua {package.PackageType}");
+            if (description.Length > 25) description = description[..25];
+
+            var amount = (int)package.Price;
+
+            // 5. Gọi PayOS API
+            var request = new CreatePaymentLinkRequest
+            {
+                OrderCode   = orderCode,
+                Amount      = amount,
+                Description = description,
+                CancelUrl   = _configuration["PayOS:CancelUrl"]!,
+                ReturnUrl   = _configuration["PayOS:ReturnUrl"]!,
+                BuyerName   = dto.BuyerName,
+                BuyerEmail  = dto.BuyerEmail,
+                Items       = new List<PaymentLinkItem>
+                {
+                    new PaymentLinkItem
+                    {
+                        Name     = RemoveDiacritics(package.PackageType),
+                        Quantity = 1,
+                        Price    = amount
+                    }
+                }
+            };
+
+            var result = await _payOS.PaymentRequests.CreateAsync(request);
+            return result.CheckoutUrl;
         }
 
         // ─── Helper: Xóa dấu tiếng Việt ─────────────────────────────────────────────

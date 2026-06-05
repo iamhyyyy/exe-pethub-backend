@@ -60,6 +60,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .Include(i => i.Pet)
                 .Include(i => i.Appointment)
                 .Include(i => i.Customer)
+                .Include(i => i.Details).ThenInclude(d => d.Item)
                 .Where(i => i.PayOsOrderCode == orderCode)
                 .SingleOrDefaultAsync();
         }

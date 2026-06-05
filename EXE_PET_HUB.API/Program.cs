@@ -61,6 +61,8 @@ namespace EXE_PET_HUB.API
             builder.Services.AddHostedService<AppointmentReminderWorker>();
             builder.Services.AddHostedService<AppointmentStatusWorker>();
 
+            builder.Services.AddScoped<IStorePackageService, StorePackageService>();
+            builder.Services.AddScoped<IStorePackageRepository, StorePackageRepository>();
             builder.Services.AddScoped<IPayOsService, PayOsService>();
             builder.Services.AddControllers();
             //AddRateLimiter
