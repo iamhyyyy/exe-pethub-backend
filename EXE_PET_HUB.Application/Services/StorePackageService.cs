@@ -21,13 +21,24 @@ namespace EXE_PET_HUB.Application.Services
             if (manager == null)
                 throw new Exception($"Không tìm thấy Manager với Id '{dto.ManagerId}'.");
 
+            // Validate Item tồn tại và là loại Plan
+            var item = await _unitOfWork.ItemRepository.GetByIdAsync(dto.ItemId);
+            if (item == null)
+                throw new Exception($"Không tìm thấy gói (Item) với Id '{dto.ItemId}'.");
+                
+            if (item.Type != ItemType.Plan)
+                throw new Exception($"Item '{dto.ItemId}' không phải là gói Premium (Type != Plan).");
+
+            if (!item.DurationInDays.HasValue)
+                throw new Exception($"Item '{dto.ItemId}' thiếu thông tin số ngày gia hạn (DurationInDays).");
+
             var package = new StorePackagePayment
             {
                 Id = Guid.NewGuid().ToString(),
                 ManagerId = dto.ManagerId,
-                PackageType = dto.PackageType,
-                Price = dto.Price,
-                DurationInDays = dto.DurationInDays,
+                PackageType = item.Name,
+                Price = (double)item.Price,
+                DurationInDays = item.DurationInDays.Value,
                 Status = PaymentStatus.Pending,
                 CreatedAt = DateTime.UtcNow.AddHours(7),
                 UpdatedAt = DateTime.UtcNow.AddHours(7)

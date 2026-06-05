@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
@@ -18,5 +18,6 @@ namespace EXE_PET_HUB.Domain.Entities
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
+        public int? DurationInDays { get; set; }
     }
 }
