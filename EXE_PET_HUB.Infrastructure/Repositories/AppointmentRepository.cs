@@ -2,6 +2,7 @@
 using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using EXE_PET_HUB.Domain.Enums;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
@@ -33,6 +34,15 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         {
             return await _context.Appointments
                 .Where(a => a.PetId == petId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Appointment>> GetConfirmedAppointments()
+        {
+            return await _context.Appointments
+                .Where(a => a.Status == AppointmentStatus.Confirmed)
+                .Include(p => p.Customer)
+                .Include(p => p.Pet)
                 .ToListAsync();
         }
     }

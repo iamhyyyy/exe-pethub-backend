@@ -65,17 +65,6 @@ namespace EXE_PET_HUB.Infrastructure.Data
             await CreateUserAsync(userManager, "admin", "nguyenhuy3112005@gmail.com", "Admin@123", "Admin", "User", "admin");
             await CreateUserAsync(userManager, "manager", "kietdtse183938@fpt.edu.vn", "Manager@123", "Manager", "User", "manager");
             await CreateUserAsync(userManager, "customer", "huyndse184016@fpt.edu.vn", "Customer@123", "Customer", "User", "customer");
-
-            await CreateUserAsync(userManager, "hoang_manager", "hoang.manager@example.com", "Manager@123", "Hoàng", "Nguyễn", "manager");
-            await CreateUserAsync(userManager, "lan_anh", "lananh@gmail.com", "Customer@123", "Lan", "Anh", "customer");
-            await CreateUserAsync(userManager, "minh_quan", "minhquan@gmail.com", "Customer@123", "Minh", "Quân", "customer");
-            await CreateUserAsync(userManager, "thu_thao", "thuthao@gmail.com", "Customer@123", "Thu", "Thảo", "customer");
-            await CreateUserAsync(userManager, "quoc_bao", "quocbao@gmail.com", "Customer@123", "Quốc", "Bảo", "customer");
-            await CreateUserAsync(userManager, "thanh_truc", "thanhtruc@gmail.com", "Customer@123", "Thanh", "Trúc", "customer");
-            await CreateUserAsync(userManager, "gia_huy", "giahuy_test@gmail.com", "Customer@123", "Gia", "Huy", "customer");
-            await CreateUserAsync(userManager, "hong_ngoc", "hongngoc@gmail.com", "Customer@123", "Hồng", "Ngọc", "customer");
-            await CreateUserAsync(userManager, "tuan_anh", "tuananh_pet@gmail.com", "Customer@123", "Tuấn", "Anh", "customer");
-            await CreateUserAsync(userManager, "bich_phuong", "bichphuong@gmail.com", "Customer@123", "Bích", "Phương", "customer");
         }
 
         private static async Task CreateUserAsync(UserManager<User> userManager, string username, string email, string password, string firstName, string lastName, string role)

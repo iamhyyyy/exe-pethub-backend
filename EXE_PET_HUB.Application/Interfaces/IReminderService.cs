@@ -10,5 +10,6 @@ namespace EXE_PET_HUB.Application.Interfaces
     {
         Task SyncRemindersAsync();
         Task SendPendingRemindersAsync();
+        Task CancelExpiredAppointmentsAsync();
     }
 }

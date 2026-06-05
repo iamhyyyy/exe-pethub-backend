@@ -13,7 +13,6 @@ namespace EXE_PET_HUB.Application.Services
         private readonly IEmailService _emailService;
 
         string statusColor = "#333"; // Mặc định
-        AppointmentStatus statusText = AppointmentStatus.Confirmed;
         string customMessage = "We are writing to update you on your appointment status.";
 
         public AppointmentService(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService)
