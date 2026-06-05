@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Infrastructure.Data;
@@ -52,6 +52,16 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
             return await _context.InvoiceDetails
                 .Where(i => i.InvoiceId == invoiceID)
                 .ToListAsync();
+        }
+
+        public async Task<Invoice> GetInvoiceByOrderCodeAsync(long orderCode)
+        {
+            return await _context.Invoices
+                .Include(i => i.Pet)
+                .Include(i => i.Appointment)
+                .Include(i => i.Customer)
+                .Where(i => i.PayOsOrderCode == orderCode)
+                .SingleOrDefaultAsync();
         }
 
     }
