@@ -65,7 +65,6 @@ namespace EXE_PET_HUB.Application.Services
             return MapToDto(package, manager!);
         }
 
-        // ─── Helper ──────────────────────────────────────────────────────────────────
         private static StorePackagePaymentDto MapToDto(StorePackagePayment p, User manager)
         {
             return new StorePackagePaymentDto

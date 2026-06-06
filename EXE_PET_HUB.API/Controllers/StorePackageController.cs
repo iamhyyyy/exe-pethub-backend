@@ -32,16 +32,11 @@ namespace EXE_PET_HUB.API.Controllers
             }
         }
 
-        [HttpPost("{id}/checkout")]
-        public async Task<IActionResult> CreateCheckoutUrl(string id, [FromBody] CreateStorePackageCheckoutDto dto)
+        [HttpPost("payment")]
+        public async Task<IActionResult> CreateCheckoutUrl(CreateStorePackageCheckoutDto dto)
         {
             try
             {
-                if (id != dto.PackageId)
-                {
-                    return BadRequest(new { message = "PackageId in path and body do not match." });
-                }
-
                 var checkoutUrl = await _payOsService.CreateStorePackageCheckoutUrlAsync(dto);
                 return Ok(new { checkoutUrl });
             }
