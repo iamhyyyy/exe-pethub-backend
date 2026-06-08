@@ -19,8 +19,8 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public double Price { get; set; }
         public string PackageType { get; set; }
-        public int DurationInDays { get; set; }        // Số ngày gói có hiệu lực
-        public long? PayOsOrderCode { get; set; }      // Lưu orderCode từ PayOS
+        public int DurationInDays { get; set; }        
+        public long? PayOsOrderCode { get; set; }     
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
         public string PaymentMethod { get; set; } = "payos";
         public string? TransactionNo { get; set; }

@@ -33,7 +33,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost("payment")]
-        public async Task<IActionResult> CreateCheckoutUrl(CreateStorePackageCheckoutDto dto)
+        public async Task<IActionResult> CreateCheckoutUrl([FromBody] CreateStorePackageCheckoutDto dto)
         {
             try
             {
