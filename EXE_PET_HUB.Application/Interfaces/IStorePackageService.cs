@@ -18,5 +18,10 @@ namespace EXE_PET_HUB.Application.Interfaces
         /// Lấy chi tiết 1 gói theo Id
         /// </summary>
         Task<StorePackagePaymentDto?> GetByIdAsync(string id);
+
+        /// <summary>
+        /// Lấy tất cả danh sách gói đã mua
+        /// </summary>
+        Task<List<StorePackagePaymentDto>> GetAllAsync();
     }
 }

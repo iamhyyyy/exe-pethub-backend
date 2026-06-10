@@ -30,5 +30,13 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<List<StorePackagePayment>> GetAllStorePackagesAsync()
+        {
+            return await _context.StorePackagePayments
+                .Include(s => s.Manager)
+                .OrderByDescending(s => s.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

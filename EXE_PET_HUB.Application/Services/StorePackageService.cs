@@ -56,6 +56,12 @@ namespace EXE_PET_HUB.Application.Services
             return packages.Select(p => MapToDto(p, p.Manager)).ToList();
         }
 
+        public async Task<List<StorePackagePaymentDto>> GetAllAsync()
+        {
+            var packages = await _unitOfWork.StorePackageRepository.GetAllStorePackagesAsync();
+            return packages.Select(p => MapToDto(p, p.Manager)).ToList();
+        }
+
         public async Task<StorePackagePaymentDto?> GetByIdAsync(string id)
         {
             var package = await _unitOfWork.StorePackageRepository.GetByIdAsync(id);

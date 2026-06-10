@@ -6,5 +6,6 @@ namespace EXE_PET_HUB.Application.Interfaces
     {
         Task<StorePackagePayment?> GetByOrderCodeAsync(long orderCode);
         Task<List<StorePackagePayment>> GetAllByManagerIdAsync(Guid managerId);
+        Task<List<StorePackagePayment>> GetAllStorePackagesAsync();
     }
 }

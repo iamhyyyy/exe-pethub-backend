@@ -60,6 +60,20 @@ namespace EXE_PET_HUB.API.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var packages = await _storePackageService.GetAllAsync();
+                return Ok(packages);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
