@@ -8,6 +8,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Id { get; set; }
         public Guid CustomerId { get; set; }
         public string PetId { get; set; }
+        public string StoreId { get; set; }
         public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
@@ -21,6 +22,7 @@ namespace EXE_PET_HUB.Application.DTOs
     {
         public Guid CustomerId { get; set; }
         public string PetId { get; set; }
+        public string StoreId { get; set; }
         public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }

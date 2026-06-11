@@ -12,6 +12,7 @@ namespace EXE_PET_HUB.Application.DTOs
     public class ItemDto
     {
         public string Id { get; set; } = null!;
+        public string StoreId { get; set; }
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
@@ -19,6 +20,7 @@ namespace EXE_PET_HUB.Application.DTOs
     // DTO để Frontend gửi lên khi tạo mới (không cần Id)
     public class CreateItemDto
     {
+        public string StoreId { get; set; }
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }

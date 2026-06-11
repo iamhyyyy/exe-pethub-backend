@@ -21,8 +21,10 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 //for identity
                 await SeedRolesAsync(roleManager);
                 await SeedUsersAsync(userManager);
+                await SeedStoresAsync(context);
+                await SeedStoreCustomersAsync(context);
                 await SeedItemsAsync(context);
-                Console.WriteLine("Done Identity & Items");
+                Console.WriteLine("Done Identity, Store & Items");
 
                 //for service
                 await SeedPetsAsync(context);
@@ -87,37 +89,108 @@ namespace EXE_PET_HUB.Infrastructure.Data
             }
         }
 
-        // 3. Seed Pets
+        // 3. Seed Stores
+        private static async Task SeedStoresAsync(AppDbContext context)
+        {
+            if (context.Stores.Any()) return;
+
+            var managers = context.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("manager"))
+                .ToList();
+
+            if (!managers.Any()) return;
+
+            var stores = new List<Store>
+            {
+                new Store
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ManagerId = managers[0].Id,
+                    Name = "Pet Hub Quận 1",
+                    Address = "123 Nguyễn Huệ, Quận 1, TP.HCM",
+                    Phone = "0901234567",
+                    storeImage = "",
+                    IsActive = true,
+                    CreateAt = DateTime.UtcNow.AddHours(7),
+                    UpdateAt = DateTime.UtcNow.AddHours(7)
+                }
+            };
+
+            context.Stores.AddRange(stores);
+            await context.SaveChangesAsync();
+        }
+
+        // 4. Seed Store Customers
+        private static async Task SeedStoreCustomersAsync(AppDbContext context)
+        {
+            if (context.StoreCustomers.Any()) return;
+
+            var store = context.Stores.FirstOrDefault();
+            if (store == null) return;
+
+            var customerRoleId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+            var customerIds = context.UserRoles
+                .Where(ur => ur.RoleId == customerRoleId)
+                .Select(ur => ur.UserId)
+                .ToList();
+
+            if (!customerIds.Any()) return;
+
+            var storeCustomers = customerIds.Select(customerId => new StoreCustomer
+            {
+                Id = Guid.NewGuid().ToString(),
+                StoreId = store.Id,
+                CustomerId = customerId,
+                CreateAt = DateTime.UtcNow.AddHours(7)
+            }).ToList();
+
+            context.StoreCustomers.AddRange(storeCustomers);
+            await context.SaveChangesAsync();
+        }
+
+        // 5. Seed Pets
         private static async Task SeedPetsAsync(AppDbContext context)
         {
             if (context.Pets.Any()) return;
 
-            // Lấy danh sách các UserId (Guid) của những người có Role là 'customer'
-            // Để đảm bảo Pet được gán cho đúng đối tượng khách hàng
-            var customerIds = context.Users.Select(u => u.Id).ToList();
-
-            if (!customerIds.Any()) return;
+            var storeCustomers = context.StoreCustomers.ToList();
+            if (!storeCustomers.Any()) return;
 
             var random = new Random();
-            var pets = new List<Pet>
+            var petData = new[]
             {
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "LuLu", Species = "Chó Poodle", Color = "Nâu", DateOfBirth = new DateOnly(2022, 5, 10), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Mimi", Species = "Mèo Anh lông ngắn", Color = "Xám xanh", DateOfBirth = new DateOnly(2023, 1, 15), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Ngáo", Species = "Chó Husky", Color = "Đen trắng", DateOfBirth = new DateOnly(2021, 11, 20), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Bánh Bao", Species = "Mèo Ba Tư", Color = "Trắng", DateOfBirth = new DateOnly(2023, 3, 5), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Xúc Xích", Species = "Chó Dachshund", Color = "Đen vàng", DateOfBirth = new DateOnly(2022, 8, 12), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Kem", Species = "Chó Samoyed", Color = "Trắng tuyết", DateOfBirth = new DateOnly(2022, 12, 25), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Mướp", Species = "Mèo Ta", Color = "Vằn", DateOfBirth = new DateOnly(2020, 6, 30), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Bơ", Species = "Chó Golden Retriever", Color = "Vàng kim", DateOfBirth = new DateOnly(2021, 4, 18), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Đậu Đậu", Species = "Chó Corgi", Color = "Cam trắng", DateOfBirth = new DateOnly(2023, 2, 14), CustomerId = customerIds[random.Next(customerIds.Count)] },
-                new Pet { Id = Guid.NewGuid().ToString(), Name = "Mun", Species = "Mèo Munchkin", Color = "Tam thể", DateOfBirth = new DateOnly(2023, 5, 20), CustomerId = customerIds[random.Next(customerIds.Count)] }
+                new { Name = "LuLu", Species = "Chó Poodle", Color = "Nâu", DateOfBirth = new DateOnly(2022, 5, 10) },
+                new { Name = "Mimi", Species = "Mèo Anh lông ngắn", Color = "Xám xanh", DateOfBirth = new DateOnly(2023, 1, 15) },
+                new { Name = "Ngáo", Species = "Chó Husky", Color = "Đen trắng", DateOfBirth = new DateOnly(2021, 11, 20) },
+                new { Name = "Bánh Bao", Species = "Mèo Ba Tư", Color = "Trắng", DateOfBirth = new DateOnly(2023, 3, 5) },
+                new { Name = "Xúc Xích", Species = "Chó Dachshund", Color = "Đen vàng", DateOfBirth = new DateOnly(2022, 8, 12) },
+                new { Name = "Kem", Species = "Chó Samoyed", Color = "Trắng tuyết", DateOfBirth = new DateOnly(2022, 12, 25) },
+                new { Name = "Mướp", Species = "Mèo Ta", Color = "Vằn", DateOfBirth = new DateOnly(2020, 6, 30) },
+                new { Name = "Bơ", Species = "Chó Golden Retriever", Color = "Vàng kim", DateOfBirth = new DateOnly(2021, 4, 18) },
+                new { Name = "Đậu Đậu", Species = "Chó Corgi", Color = "Cam trắng", DateOfBirth = new DateOnly(2023, 2, 14) },
+                new { Name = "Mun", Species = "Mèo Munchkin", Color = "Tam thể", DateOfBirth = new DateOnly(2023, 5, 20) }
             };
+
+            var pets = petData.Select(data =>
+            {
+                var storeCustomer = storeCustomers[random.Next(storeCustomers.Count)];
+                return new Pet
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    StoreId = storeCustomer.StoreId,
+                    CustomerId = storeCustomer.CustomerId,
+                    Name = data.Name,
+                    Species = data.Species,
+                    Color = data.Color,
+                    DateOfBirth = data.DateOfBirth
+                };
+            }).ToList();
 
             context.Pets.AddRange(pets);
             await context.SaveChangesAsync();
         }
 
-        // 4. Seed Appointments
+        // 6. Seed Appointments
         private static async Task SeedAppointmentsAsync(AppDbContext context)
         {
             if (context.Appointments.Any()) return;
@@ -139,8 +212,8 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 {
                     Id = Guid.NewGuid().ToString(),
                     PetId = selectedPet.Id,
-                    // Quan trọng: CustomerId phải khớp với chủ của con Pet đó
                     CustomerId = selectedPet.CustomerId,
+                    StoreId = selectedPet.StoreId,
                     AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7).AddDays(i)), // Lịch hẹn từ mai trở đi
                     StartTime = new TimeOnly(8 + (i % 8), 0), // Giờ bắt đầu từ 8h sáng rải rác ra
                     EndTime = new TimeOnly(9 + (i % 8), 0),
@@ -155,7 +228,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
             await context.SaveChangesAsync();
         }
 
-        // 5. Seed Medical Records
+        // 7. Seed Medical Records
         private static async Task SeedMedicalRecordsAsync(AppDbContext context)
         {
             if (context.MedicalRecords.Any()) return;
@@ -199,33 +272,36 @@ namespace EXE_PET_HUB.Infrastructure.Data
             await context.SaveChangesAsync();
         }
 
-        // 6. Seed Items (Dịch vụ & Sản phẩm)
+        // 8. Seed Items (Dịch vụ & Sản phẩm)
         private static async Task SeedItemsAsync(AppDbContext context)
         {
             if (context.Items.Any()) return;
 
+            var store = context.Stores.FirstOrDefault();
+            if (store == null) return;
+
             var items = new List<Item>
             {
                 // Dịch vụ (Service)
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Khám tổng quát", Price = 150000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Tiêm phòng dại (Rabies)", Price = 120000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Combo Tắm & Cắt tỉa lông", Price = 350000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Lưu chuồng (Hotel) - 1 ngày", Price = 200000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Tẩy giun sán", Price = 80000, Type = ItemType.Service },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Khám tổng quát", Price = 150000, Type = ItemType.Service },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Tiêm phòng dại (Rabies)", Price = 120000, Type = ItemType.Service },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Combo Tắm & Cắt tỉa lông", Price = 350000, Type = ItemType.Service },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Lưu chuồng (Hotel) - 1 ngày", Price = 200000, Type = ItemType.Service },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Tẩy giun sán", Price = 80000, Type = ItemType.Service },
 
                 // Sản phẩm (Product)
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Thức ăn hạt Royal Canin 1kg", Price = 250000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product }
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Thức ăn hạt Royal Canin 1kg", Price = 250000, Type = ItemType.Product },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product },
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product }
             };
 
             context.Items.AddRange(items);
             await context.SaveChangesAsync();
         }
 
-        // 7. Seed Invoices & InvoiceDetails
+        // 9. Seed Invoices & InvoiceDetails
         private static async Task SeedInvoicesAsync(AppDbContext context)
         {
             if (context.Invoices.Any()) return;
@@ -270,12 +346,14 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 invoices.Add(new Invoice
                 {
                     Id = invoiceId,
+                    StoreId = appt.StoreId,
                     AppointmentId = appt.Id,
                     PetId = appt.PetId,
                     CustomerId = appt.CustomerId,
                     TotalAmount = total,
-                    CreatedAt = DateTime.UtcNow,
-                    Details = invoiceDetails // EF Core sẽ tự động lưu cả Details vào database
+                    Status = InvoiceStatus.Paid,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    Details = invoiceDetails
                 });
             }
 
@@ -283,7 +361,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
             await context.SaveChangesAsync();
         }
 
-        // 8. Seed Store Package Payments
+        // 10. Seed Store Package Payments
         private static async Task SeedStorePackagePaymentsAsync(AppDbContext context)
         {
             if (context.StorePackagePayments.Any()) return;
@@ -330,7 +408,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
             await context.SaveChangesAsync();
         }
 
-        // 9. Seed Appointment Reminders
+        // 11. Seed Appointment Reminders
         private static async Task SeedAppointmentRemindersAsync(AppDbContext context)
         {
             if (context.AppointmentReminders.Any()) return;

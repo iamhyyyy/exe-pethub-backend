@@ -16,6 +16,7 @@ namespace EXE_PET_HUB.Domain.Entities
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public Guid CustomerId { get; set; }
         public string PetId { get; set; }
+        public string StoreId { get; set; }
         public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
@@ -31,5 +32,8 @@ namespace EXE_PET_HUB.Domain.Entities
 
         [ForeignKey(nameof(PetId))]
         public Pet Pet { get; set; } = null!;
+
+        [ForeignKey(nameof(StoreId))]
+        public Store Store { get; set; } = null!;
     }
 }

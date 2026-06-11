@@ -11,6 +11,7 @@ namespace EXE_PET_HUB.Application.DTOs
     public class InvoiceDto
     {
         public string Id { get; set; }
+        public string StoreId { get; set; }
         public string? PetName { get; set; }
         public string? AppointmentNote { get; set; }
         public string? CustomerName { get; set; }
@@ -23,6 +24,7 @@ namespace EXE_PET_HUB.Application.DTOs
     public class ResponseInvoiceOfCreateDto
     {
         public string Id { get; set; }
+        public string StoreId { get; set; }
         public string? PetName { get; set; }
         public string? AppointmentNote { get; set; }
         public string? CustomerName { get; set; }
@@ -52,6 +54,7 @@ namespace EXE_PET_HUB.Application.DTOs
 
     public class CreateInvoiceDto
     {
+        public string StoreId { get; set; }
         public string? PetId { get; set; }
         public string? AppointmentId { get; set; }
         public Guid? CustomerId { get; set; }

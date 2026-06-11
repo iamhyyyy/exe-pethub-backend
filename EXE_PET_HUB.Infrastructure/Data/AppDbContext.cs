@@ -20,6 +20,8 @@ namespace EXE_PET_HUB.Infrastructure.Data
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Pet> Pets { get; set; }
         public DbSet<StorePackagePayment> StorePackagePayments { get; set; }
+        public DbSet<Store> Stores { get; set; }
+        public DbSet<StoreCustomer> StoreCustomers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

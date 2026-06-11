@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace EXE_PET_HUB.Domain.Entities
 {
@@ -14,7 +15,7 @@ namespace EXE_PET_HUB.Domain.Entities
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-
+        public string StoreId { get; set; }
         public string? PetId { get; set; }
         public string? AppointmentId { get; set; }
         public Guid? CustomerId { get; set; }
@@ -33,6 +34,9 @@ namespace EXE_PET_HUB.Domain.Entities
 
         [ForeignKey(nameof(CustomerId))]
         public User? Customer { get; set; }
+
+        [ForeignKey(nameof(StoreId))]
+        public Store Store { get; set; }
 
         public ICollection<InvoiceDetail> Details { get; set; } = new List<InvoiceDetail>();
     }

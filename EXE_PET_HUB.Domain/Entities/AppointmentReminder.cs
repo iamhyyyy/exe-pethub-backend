@@ -14,7 +14,6 @@ namespace EXE_PET_HUB.Domain.Entities
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-
         public string AppointmentId { get; set; }
         public DateTime ReminderTime { get; set; }
         public ReminderStatus Status { get; set; } 

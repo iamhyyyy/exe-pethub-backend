@@ -9,25 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EXE_PET_HUB.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class changeTimeUTCToVN : Migration
+    public partial class addTableStore : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Item",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Item", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -94,22 +80,25 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Pet",
+                name: "Store",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ManagerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Species = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Color = table.Column<string>(type: "varchar(255)", nullable: true),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true)
+                    Address = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Phone = table.Column<string>(type: "varchar(15)", nullable: true),
+                    storeImage = table.Column<string>(type: "text", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pet", x => x.Id);
+                    table.PrimaryKey("PK_Store", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Pet_Users_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_Store_Users_ManagerId",
+                        column: x => x.ManagerId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -227,12 +216,89 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Item",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    StoreId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Item", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Item_Store_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pet",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    StoreId = table.Column<string>(type: "text", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Species = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Color = table.Column<string>(type: "varchar(255)", nullable: true),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pet", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Pet_Store_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Pet_Users_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StoreCustomer",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    StoreId = table.Column<string>(type: "text", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StoreCustomer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StoreCustomer_Store_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StoreCustomer_Users_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointment",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     PetId = table.Column<string>(type: "text", nullable: false),
+                    StoreId = table.Column<string>(type: "text", nullable: false),
                     AppointmentDate = table.Column<DateOnly>(type: "date", nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
@@ -248,6 +314,12 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         name: "FK_Appointment_Pet_PetId",
                         column: x => x.PetId,
                         principalTable: "Pet",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Appointment_Store_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -284,11 +356,13 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    StoreId = table.Column<string>(type: "text", nullable: false),
                     PetId = table.Column<string>(type: "text", nullable: true),
                     AppointmentId = table.Column<string>(type: "text", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -303,6 +377,12 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         column: x => x.PetId,
                         principalTable: "Pet",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Invoice_Store_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invoice_Users_CustomerId",
                         column: x => x.CustomerId,
@@ -389,6 +469,11 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 column: "PetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointment_StoreId",
+                table: "Appointment",
+                column: "StoreId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AppointmentReminder_AppointmentId",
                 table: "AppointmentReminder",
                 column: "AppointmentId");
@@ -409,6 +494,11 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 column: "PetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Invoice_StoreId",
+                table: "Invoice",
+                column: "StoreId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InvoiceDetail_InvoiceId",
                 table: "InvoiceDetail",
                 column: "InvoiceId");
@@ -417,6 +507,11 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 name: "IX_InvoiceDetail_ItemId",
                 table: "InvoiceDetail",
                 column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Item_StoreId",
+                table: "Item",
+                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MedicalRecord_AppointmentId",
@@ -434,6 +529,11 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Pet_StoreId",
+                table: "Pet",
+                column: "StoreId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
                 table: "RoleClaims",
                 column: "RoleId");
@@ -443,6 +543,21 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 table: "Roles",
                 column: "NormalizedName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Store_ManagerId",
+                table: "Store",
+                column: "ManagerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoreCustomer_CustomerId",
+                table: "StoreCustomer",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoreCustomer_StoreId",
+                table: "StoreCustomer",
+                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StorePackagePayment_ManagerId",
@@ -492,6 +607,9 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                 name: "RoleClaims");
 
             migrationBuilder.DropTable(
+                name: "StoreCustomer");
+
+            migrationBuilder.DropTable(
                 name: "StorePackagePayment");
 
             migrationBuilder.DropTable(
@@ -520,6 +638,9 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Pet");
+
+            migrationBuilder.DropTable(
+                name: "Store");
 
             migrationBuilder.DropTable(
                 name: "Users");

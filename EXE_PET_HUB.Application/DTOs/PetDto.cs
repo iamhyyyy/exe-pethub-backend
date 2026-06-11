@@ -3,6 +3,7 @@ namespace EXE_PET_HUB.Application.DTOs
     public class PetDto
     {
         public string? Id { get; set; }
+        public string StoreId { get; set; }
         public Guid CustomerId { get; set; }
         public string Name { get; set; } = null!;
         public string Species { get; set; } = null!;
@@ -12,6 +13,7 @@ namespace EXE_PET_HUB.Application.DTOs
 
     public class CreatePetDto
     {
+        public string StoreId { get; set; }
         public Guid CustomerId { get; set; }
         public string Name { get; set; } = null!;
         public string Species { get; set; } = null!;

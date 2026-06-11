@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace EXE_PET_HUB.Domain.Entities
 {
@@ -10,7 +11,7 @@ namespace EXE_PET_HUB.Domain.Entities
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-
+        public string StoreId { get; set; }
         public Guid CustomerId { get; set; }
 
         [Column(TypeName = "varchar(255)")]
@@ -26,5 +27,8 @@ namespace EXE_PET_HUB.Domain.Entities
 
         [ForeignKey(nameof(CustomerId))]
         public User Customer { get; set; } = null!;
+
+        [ForeignKey(nameof(StoreId))]
+        public Store Store { get; set; }
     }
 }

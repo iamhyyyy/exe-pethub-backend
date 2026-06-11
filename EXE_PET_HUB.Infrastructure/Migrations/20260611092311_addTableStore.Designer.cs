@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EXE_PET_HUB.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260518131204_AddpropertyForInvoice")]
-    partial class AddpropertyForInvoice
+    [Migration("20260611092311_addTableStore")]
+    partial class addTableStore
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,10 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -63,6 +67,8 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("PetId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Appointment");
                 });
@@ -112,6 +118,10 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(10,2)");
 
@@ -122,6 +132,8 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("PetId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Invoice");
                 });
@@ -173,10 +185,16 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Item");
                 });
@@ -241,11 +259,80 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
+                    b.HasIndex("StoreId");
+
                     b.ToTable("Pet");
+                });
+
+            modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.Store", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ManagerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("storeImage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManagerId");
+
+                    b.ToTable("Store");
+                });
+
+            modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.StoreCustomer", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("StoreCustomer");
                 });
 
             modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.StorePackagePayment", b =>
@@ -535,9 +622,17 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Customer");
 
                     b.Navigation("Pet");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.AppointmentReminder", b =>
@@ -565,11 +660,19 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("PetId");
 
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Appointment");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Pet");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.InvoiceDetail", b =>
@@ -589,6 +692,17 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     b.Navigation("Invoice");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.Item", b =>
+                {
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.MedicalRecord", b =>
@@ -616,7 +730,45 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Customer");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.Store", b =>
+                {
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.StoreCustomer", b =>
+                {
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.User", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EXE_PET_HUB.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("EXE_PET_HUB.Domain.Entities.StorePackagePayment", b =>
