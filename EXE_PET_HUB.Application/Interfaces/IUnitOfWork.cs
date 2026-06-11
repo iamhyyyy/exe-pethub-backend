@@ -11,5 +11,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         IAppointmentRepository AppointmentRepository { get; }
         IAppointmentReminderRepository AppointmentReminderRepository { get; }
         IUserRepository UserRepository { get; }
+        IStorePackageRepository StorePackageRepository { get; }
     }
 }

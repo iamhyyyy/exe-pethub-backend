@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
@@ -19,8 +19,10 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public double Price { get; set; }
         public string PackageType { get; set; }
-        public PaymentStatus Status { get; set; }
-        public string PaymentMethod { get; set; } = "vnpay";
+        public int DurationInDays { get; set; }        
+        public long? PayOsOrderCode { get; set; }     
+        public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
+        public string PaymentMethod { get; set; } = "payos";
         public string? TransactionNo { get; set; }
         public DateTime? PaidAt { get; set; }
 

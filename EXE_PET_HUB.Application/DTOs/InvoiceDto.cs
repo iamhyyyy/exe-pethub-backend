@@ -17,8 +17,9 @@ namespace EXE_PET_HUB.Application.DTOs
         public string? CustomerName { get; set; }
         public decimal TotalAmount { get; set; }
         public string Status { get; set; }
+        public long? PayOsOrderCode { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
- 
+
     }
 
     public class ResponseInvoiceOfCreateDto
@@ -30,6 +31,8 @@ namespace EXE_PET_HUB.Application.DTOs
         public string? CustomerName { get; set; }
         public ICollection<InvoiceDetailsDto> Details { get; set; } = new List<InvoiceDetailsDto>();
         public decimal TotalAmount { get; set; }
+        public string Status { get; set; }
+        public long? PayOsOrderCode { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
     }

@@ -294,7 +294,12 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product },
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product },
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product }
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product },
+                
+                // Gói Premium (Plan)
+                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
+                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
+                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 }
             };
 
             context.Items.AddRange(items);
@@ -377,24 +382,22 @@ namespace EXE_PET_HUB.Infrastructure.Data
             var random = new Random();
             var payments = new List<StorePackagePayment>();
 
-            // Các gói dịch vụ mẫu
-            var packages = new[]
-            {
-                new { Name = "Gói Cơ Bản (1 Tháng)", Price = 500000.0 },
-                new { Name = "Gói Chuyên Nghiệp (6 Tháng)", Price = 2500000.0 },
-                new { Name = "Gói Doanh Nghiệp (1 Năm)", Price = 4500000.0 }
-            };
+            // Thay vì dùng list cứng, lấy các Item có Type là Plan ra
+            var packages = context.Items.Where(i => i.Type == ItemType.Plan).ToList();
+
+            if (!packages.Any()) return;
 
             foreach (var manager in managers)
             {
-                var selectedPackage = packages[random.Next(packages.Length)];
+                var selectedPackage = packages[random.Next(packages.Count)];
 
                 payments.Add(new StorePackagePayment
                 {
                     Id = Guid.NewGuid().ToString(),
                     ManagerId = manager.Id,
                     PackageType = selectedPackage.Name,
-                    Price = selectedPackage.Price,
+                    Price = (double)selectedPackage.Price,
+                    DurationInDays = selectedPackage.DurationInDays ?? 30,
                     Status = PaymentStatus.Completed, // Mặc định là đã thanh toán cho đẹp
                     PaymentMethod = "vnpay",
                     TransactionNo = "VNP" + random.Next(100000, 999999).ToString(),

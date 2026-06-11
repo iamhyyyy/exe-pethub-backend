@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,5 +14,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         Task<List<Invoice>> GetAllInvoicesByCusIDAsync(Guid customerID);
         Task<List<InvoiceDetail>> GetDetailsAsync(string InvoiceID);
         Task<Invoice> GetInvoiceAsync(string invoiceId);
+        Task<Invoice> GetInvoiceByOrderCodeAsync(long orderCode);
     }
 }

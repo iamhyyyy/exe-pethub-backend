@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Domain.Enums;
+using EXE_PET_HUB.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,6 +14,8 @@ namespace EXE_PET_HUB.Domain.Entities
         public string? LastName { get; set; }
 
         public PlanType Plan { get; set; } = PlanType.Free;
+
+        public DateTime? PremiumExpiredAt { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 

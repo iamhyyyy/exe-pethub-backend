@@ -19,6 +19,7 @@ namespace EXE_PET_HUB.Domain.Entities
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
+        public int? DurationInDays { get; set; }
 
         [ForeignKey(nameof(StoreId))]
         public Store Store { get; set; }

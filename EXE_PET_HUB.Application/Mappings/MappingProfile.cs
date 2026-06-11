@@ -45,7 +45,11 @@ namespace EXE_PET_HUB.Application.Mappings
             .ForMember(dest => dest.AppointmentNote,
                 opt => opt.MapFrom(src => src.Appointment!.AppointmentNote))
             .ForMember(dest => dest.CustomerName,
-                opt => opt.MapFrom(src => src.Customer!.UserName));
+                opt => opt.MapFrom(src => src.Customer!.UserName))
+            .ForMember(dest => dest.Status,
+                opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.PayOsOrderCode,
+                opt => opt.MapFrom(src => src.PayOsOrderCode));
 
             CreateMap<CreateInvoiceDetailDto, Invoice>();
 
@@ -55,7 +59,11 @@ namespace EXE_PET_HUB.Application.Mappings
                 .ForMember(dest => dest.AppointmentNote,
                     opt => opt.MapFrom(src => src.Appointment!.AppointmentNote))
                 .ForMember(dest => dest.CustomerName,
-                    opt => opt.MapFrom(src => src.Customer!.UserName));
+                    opt => opt.MapFrom(src => src.Customer!.UserName))
+                .ForMember(dest => dest.Status,
+                    opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.PayOsOrderCode,
+                    opt => opt.MapFrom(src => src.PayOsOrderCode));
 
             CreateMap<InvoiceDetail, InvoiceDetailsDto>();
 

@@ -61,8 +61,9 @@ namespace EXE_PET_HUB.API
             builder.Services.AddHostedService<AppointmentReminderWorker>();
             builder.Services.AddHostedService<AppointmentStatusWorker>();
 
-            builder.Services.AddScoped<IVnPayService, VnPayService>();
-            // Add services to the container.
+            builder.Services.AddScoped<IStorePackageService, StorePackageService>();
+            builder.Services.AddScoped<IStorePackageRepository, StorePackageRepository>();
+            builder.Services.AddScoped<IPayOsService, PayOsService>();
             builder.Services.AddControllers();
             //AddRateLimiter
             builder.Services.AddRateLimiter(options =>
@@ -207,11 +208,11 @@ namespace EXE_PET_HUB.API
             });
 
             //environment variable for port, default to 8080 if not set
-            //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            //app.Run($"http://0.0.0.0:{port}");
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            app.Run();
+            // app.Run();
         }
     }
 }

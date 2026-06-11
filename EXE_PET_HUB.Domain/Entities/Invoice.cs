@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Domain.Enums;
+using EXE_PET_HUB.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +22,8 @@ namespace EXE_PET_HUB.Domain.Entities
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal TotalAmount { get; set; }
+
+        public long? PayOsOrderCode { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Pending;

@@ -1,8 +1,7 @@
-using EXE_PET_HUB.Application.DTOs.VnPay;
+using EXE_PET_HUB.Application.DTOs.PayOS;
 using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -10,23 +9,24 @@ namespace EXE_PET_HUB.API.Controllers
     [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
-        private readonly IVnPayService _vnPayService;
-        public PaymentController(IVnPayService vnPayService)
+        private readonly IPayOsService _payOsService;
+
+        public PaymentController(IPayOsService payOsService)
         {
-            _vnPayService = vnPayService;
+            _payOsService = payOsService;
         }
 
+        /// <summary>
+        /// API 1: Tạo payment link PayOS.
+        /// FE gọi → nhận checkoutUrl → redirect user sang trang thanh toán PayOS.
+        /// </summary>
         [HttpPost]
-        [EnableRateLimiting("OtpPolicy")]
-        public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model)
+        public async Task<IActionResult> CreatePaymentLink([FromBody] CreatePaymentDto dto)
         {
             try
             {
-                var url = await _vnPayService.CreatePaymentUrl(model, HttpContext);
-                return Ok(new
-                {
-                    paymentUrl = url
-                });
+                var checkoutUrl = await _payOsService.CreatePaymentLinkAsync(dto);
+                return Ok(new { checkoutUrl });
             }
             catch (Exception ex)
             {
@@ -35,52 +35,97 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         /// <summary>
-        /// Endpoint tạm thời làm ReturnUrl khi FE chưa sẵn sàng.
-        /// VNPay sẽ redirect người dùng về đây sau khi thanh toán.
-        /// Set PaymentBackReturnUrl = "http://localhost:7000/api/payment/return" trong appsettings.
+        /// API 2: Webhook từ PayOS (server-to-server).
+        /// PayOS gọi endpoint này sau khi có kết quả thanh toán.
+        /// Đây là nơi DUY NHẤT cập nhật trạng thái Invoice trong DB.
+        /// PayOS yêu cầu response HTTP 200 — nếu không sẽ retry nhiều lần.
+        /// </summary>
+        [HttpPost("webhook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> PayOsWebhook()
+        {
+            using var reader = new StreamReader(Request.Body);
+            var jsonBody = await reader.ReadToEndAsync();
+
+            var success = await _payOsService.ProcessWebhookAsync(jsonBody);
+
+            // PayOS yêu cầu luôn trả HTTP 200
+            return Ok(new { success });
+        }
+
+        /// <summary>
+        /// API 3: ReturnURL — PayOS redirect browser user về đây sau khi thanh toán.
+        /// Đây chỉ để hiển thị kết quả cho user, KHÔNG cập nhật DB (DB đã được cập nhật qua webhook).
+        /// Khi FE có trang kết quả riêng, đổi PayOS:ReturnUrl trong appsettings sang URL của FE.
         /// </summary>
         [HttpGet("return")]
         [AllowAnonymous]
-        public IActionResult PaymentReturn()
+        public IActionResult PaymentReturn(
+            [FromQuery] string code,
+            [FromQuery] string id,
+            [FromQuery] string status,
+            [FromQuery] long orderCode,
+            [FromQuery] string cancel)
         {
-            var response = _vnPayService.PaymentExecute(Request.Query);
-
-            if (!response.Success)
-                return Ok(new
-                {
-                    status = "failed",
-                    message = "Xác thực chữ ký thất bại hoặc giao dịch không hợp lệ.",
-                    data = response
-                });
-
-            if (response.VnPayResponseCode == "00")
+            // PayOS trả code "00" là thành công
+            if (code == "00" && status == "PAID")
                 return Ok(new
                 {
                     status = "success",
                     message = "Thanh toán thành công!",
-                    data = response
+                    orderCode,
+                    paymentId = id
+                });
+
+            if (cancel == "true")
+                return Ok(new
+                {
+                    status = "cancelled",
+                    message = "Người dùng đã hủy thanh toán.",
+                    orderCode
                 });
 
             return Ok(new
             {
-                status = "cancelled",
-                message = $"Giao dịch thất bại. Mã lỗi VNPay: {response.VnPayResponseCode}",
-                data = response
+                status = "failed",
+                message = $"Thanh toán thất bại. Mã lỗi: {code}",
+                orderCode
             });
         }
 
-        [HttpGet("ipn")]
-        [AllowAnonymous]
-        public async Task<IActionResult> IpnCallback()
+        /// <summary>
+        /// API 4 (Bonus): Query trạng thái giao dịch từ PayOS theo orderCode.
+        /// Dùng để check thủ công khi cần debug.
+        /// </summary>
+        [HttpGet("info/{orderCode}")]
+        public async Task<IActionResult> GetPaymentInfo(long orderCode)
         {
-            var success = await _vnPayService.ProcessIpnAsync(Request.Query);
+            try
+            {
+                var info = await _payOsService.GetPaymentInfoAsync(orderCode);
+                return Ok(info);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
-            // VNPAY bắt buộc phải return HTTP 200 với đúng format này
-            // Nếu trả 4xx/5xx, VNPAY sẽ retry nhiều lần
-            if (success)
-                return Ok(new { RspCode = "00", Message = "Confirm Success" });
-
-            return Ok(new { RspCode = "99", Message = "Fail" });
+        /// <summary>
+        /// API 5 (Bonus): Hủy payment link theo orderCode.
+        /// </summary>
+        [HttpDelete("{orderCode}")]
+        public async Task<IActionResult> CancelPayment(long orderCode)
+        {
+            try
+            {
+                var result = await _payOsService.CancelPaymentAsync(orderCode);
+                return Ok(new { message = "Đã hủy payment link thành công.", data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
