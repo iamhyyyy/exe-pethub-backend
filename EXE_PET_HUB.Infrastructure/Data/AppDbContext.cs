@@ -1,7 +1,8 @@
+using EXE_PET_HUB.Domain.Entities;
+using EXE_PET_HUB.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using EXE_PET_HUB.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace EXE_PET_HUB.Infrastructure.Data
 {

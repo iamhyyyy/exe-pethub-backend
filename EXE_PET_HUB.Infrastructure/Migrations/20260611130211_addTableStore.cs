@@ -36,6 +36,7 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "varchar(255)", nullable: true),
                     LastName = table.Column<string>(type: "varchar(255)", nullable: true),
                     Plan = table.Column<int>(type: "integer", nullable: false),
+                    PremiumExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -87,8 +88,8 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     ManagerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "varchar(255)", nullable: false),
                     Address = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Phone = table.Column<string>(type: "varchar(15)", nullable: true),
-                    storeImage = table.Column<string>(type: "text", nullable: false),
+                    Phone = table.Column<string>(type: "varchar(15)", nullable: false),
+                    storeImage = table.Column<string>(type: "text", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
@@ -112,6 +113,8 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     ManagerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Price = table.Column<double>(type: "double precision", nullable: false),
                     PackageType = table.Column<string>(type: "text", nullable: false),
+                    DurationInDays = table.Column<int>(type: "integer", nullable: false),
+                    PayOsOrderCode = table.Column<long>(type: "bigint", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PaymentMethod = table.Column<string>(type: "text", nullable: false),
                     TransactionNo = table.Column<string>(type: "text", nullable: true),
@@ -223,7 +226,8 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     StoreId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false)
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    DurationInDays = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -361,6 +365,7 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                     AppointmentId = table.Column<string>(type: "text", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    PayOsOrderCode = table.Column<long>(type: "bigint", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false)
                 },

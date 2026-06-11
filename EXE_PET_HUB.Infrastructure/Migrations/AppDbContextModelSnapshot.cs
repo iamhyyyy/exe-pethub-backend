@@ -298,13 +298,13 @@ namespace EXE_PET_HUB.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("varchar(15)");
 
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("storeImage")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

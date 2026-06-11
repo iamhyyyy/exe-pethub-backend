@@ -21,6 +21,8 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 //for identity
                 await SeedRolesAsync(roleManager);
                 await SeedUsersAsync(userManager);
+                await SeedSystemStoreAsync(context);
+                await SeedSystemPlansAsync(context);
                 await SeedStoresAsync(context);
                 await SeedStoreCustomersAsync(context);
                 await SeedItemsAsync(context);
@@ -44,6 +46,55 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 Console.WriteLine($" Error: {ex.Message}");
                 throw; 
             }
+        }
+
+        private static async Task SeedSystemStoreAsync(AppDbContext context)
+        {
+            var defaultStoreId = "44444444-4444-4444-4444-444444444444";
+
+            // Nếu đã tồn tại store hệ thống này thì bỏ qua
+            if (context.Stores.Any(s => s.Id == defaultStoreId)) return;
+
+            // Tìm tài khoản manager đã được seed ở hàm SeedUsersAsync để làm chủ Store hệ thống
+            var managerUser = context.Users.FirstOrDefault(u => u.UserName == "manager");
+            if (managerUser == null) return;
+
+            var systemStore = new Store
+            {
+                Id = defaultStoreId,
+                ManagerId = managerUser.Id,
+                Name = "Hệ thống Quản lý Pet Hub",
+                Address = "Hệ thống",
+                Phone = "0000000000",
+                storeImage = "",
+                IsActive = true,
+                CreateAt = DateTime.UtcNow.AddHours(7),
+                UpdateAt = DateTime.UtcNow.AddHours(7)
+            };
+
+            context.Stores.Add(systemStore);
+            await context.SaveChangesAsync();
+        }
+
+        private static async Task SeedSystemPlansAsync(AppDbContext context)
+        {
+            var defaultStoreId = "44444444-4444-4444-4444-444444444444";
+            var basicPlanId = "55555555-5555-5555-5555-555555555555";
+            var proPlanId = "66666666-6666-6666-6666-666666666666";
+            var businessPlanId = "77777777-7777-7777-7777-777777777777";
+
+            // Nếu đã có các plan này rồi thì không tạo lại
+            if (context.Items.Any(i => i.Type == ItemType.Plan)) return;
+
+            var plans = new List<Item>
+            {
+                new Item { Id = basicPlanId, StoreId = defaultStoreId, Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
+                new Item { Id = proPlanId, StoreId = defaultStoreId, Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
+                new Item { Id = businessPlanId, StoreId = defaultStoreId, Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 }
+            };
+
+            context.Items.AddRange(plans);
+            await context.SaveChangesAsync();
         }
 
         // 1. Seed Roles
@@ -294,12 +345,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product },
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product },
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product },
-                
-                // Gói Premium (Plan)
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
-                new Item { Id = Guid.NewGuid().ToString(), Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 }
+                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product }
             };
 
             context.Items.AddRange(items);

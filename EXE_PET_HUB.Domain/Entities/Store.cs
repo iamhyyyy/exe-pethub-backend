@@ -21,14 +21,14 @@ namespace EXE_PET_HUB.Domain.Entities
         public string Address { get; set; } = null!;
 
         [Column(TypeName = "varchar(15)")]
-        public string? Phone { get; set; }
+        public string Phone { get; set; }
 
-        public string storeImage { get; set; }
+        public string? storeImage { get; set; }
 
         public DateTime CreateAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public DateTime UpdateAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
-        public Boolean IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [ForeignKey(nameof(ManagerId))]
         public User User { get; set; }
