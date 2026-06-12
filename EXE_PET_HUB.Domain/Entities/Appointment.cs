@@ -10,7 +10,7 @@ using EXE_PET_HUB.Domain.Enums;
 namespace EXE_PET_HUB.Domain.Entities
 {
     [Table("Appointment")]
-    public class Appointment
+    public class Appointment : IStoreEntity
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();

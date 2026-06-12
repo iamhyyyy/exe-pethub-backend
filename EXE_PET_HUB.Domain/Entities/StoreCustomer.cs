@@ -8,7 +8,7 @@ using static System.Formats.Asn1.AsnWriter;
 namespace EXE_PET_HUB.Domain.Entities
 {
     [Table("StoreCustomer")]
-    public class StoreCustomer
+    public class StoreCustomer : IStoreEntity
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();

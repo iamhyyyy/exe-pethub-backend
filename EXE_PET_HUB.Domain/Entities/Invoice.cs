@@ -11,7 +11,7 @@ using static System.Formats.Asn1.AsnWriter;
 namespace EXE_PET_HUB.Domain.Entities
 {
     [Table("Invoice")]
-    public class Invoice
+    public class Invoice : IStoreEntity
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
