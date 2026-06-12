@@ -19,7 +19,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("appointments")]
-        public async Task<ActionResult<List<AppointmentDto>>> GetAllByStoreId()
+        public async Task<ActionResult<List<AppointmentDto>>> GetAll()
         {
             var appointments = await _appointmentService.GetAllAsync();
             return Ok(appointments);

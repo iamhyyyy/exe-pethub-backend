@@ -46,6 +46,8 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IAppointmentReminderRepository, AppointmentReminderRepository>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped(typeof(IStoreGenericRepository<>), typeof(StoreGenericRepository<>));
 
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
