@@ -12,6 +12,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
 {
     public class SeedData
     {
+        private static readonly string DefaultStoreId = "44444444-4444-4444-4444-444444444444";
         public async Task InitializeAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
@@ -21,8 +22,6 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 //for identity
                 await SeedRolesAsync(roleManager);
                 await SeedUsersAsync(userManager);
-                await SeedSystemStoreAsync(context);
-                await SeedSystemPlansAsync(context);
                 await SeedStoresAsync(context);
                 await SeedStoreCustomersAsync(context);
                 await SeedItemsAsync(context);
@@ -46,55 +45,6 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 Console.WriteLine($" Error: {ex.Message}");
                 throw; 
             }
-        }
-
-        private static async Task SeedSystemStoreAsync(AppDbContext context)
-        {
-            var defaultStoreId = "44444444-4444-4444-4444-444444444444";
-
-            // Nếu đã tồn tại store hệ thống này thì bỏ qua
-            if (context.Stores.Any(s => s.Id == defaultStoreId)) return;
-
-            // Tìm tài khoản manager đã được seed ở hàm SeedUsersAsync để làm chủ Store hệ thống
-            var managerUser = context.Users.FirstOrDefault(u => u.UserName == "manager");
-            if (managerUser == null) return;
-
-            var systemStore = new Store
-            {
-                Id = defaultStoreId,
-                ManagerId = managerUser.Id,
-                Name = "Hệ thống Quản lý Pet Hub",
-                Address = "Hệ thống",
-                Phone = "0000000000",
-                storeImage = "",
-                IsActive = true,
-                CreateAt = DateTime.UtcNow.AddHours(7),
-                UpdateAt = DateTime.UtcNow.AddHours(7)
-            };
-
-            context.Stores.Add(systemStore);
-            await context.SaveChangesAsync();
-        }
-
-        private static async Task SeedSystemPlansAsync(AppDbContext context)
-        {
-            var defaultStoreId = "44444444-4444-4444-4444-444444444444";
-            var basicPlanId = "55555555-5555-5555-5555-555555555555";
-            var proPlanId = "66666666-6666-6666-6666-666666666666";
-            var businessPlanId = "77777777-7777-7777-7777-777777777777";
-
-            // Nếu đã có các plan này rồi thì không tạo lại
-            if (context.Items.Any(i => i.Type == ItemType.Plan)) return;
-
-            var plans = new List<Item>
-            {
-                new Item { Id = basicPlanId, StoreId = defaultStoreId, Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
-                new Item { Id = proPlanId, StoreId = defaultStoreId, Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
-                new Item { Id = businessPlanId, StoreId = defaultStoreId, Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 }
-            };
-
-            context.Items.AddRange(plans);
-            await context.SaveChangesAsync();
         }
 
         // 1. Seed Roles
@@ -145,6 +95,27 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Stores.Any()) return;
 
+            var adminUser = context.Users.FirstOrDefault(u => u.UserName == "admin");
+
+            if (adminUser != null)
+            {
+                var systemStore = new Store
+                {
+                    Id = DefaultStoreId,
+                    ManagerId = adminUser.Id,
+                    Name = "Hệ thống Quản lý Pet Hub",
+                    Address = "Hệ thống",
+                    Phone = "0000000000",
+                    storeImage = "",
+                    IsActive = true,
+                    CreateAt = DateTime.UtcNow.AddHours(7),
+                    UpdateAt = DateTime.UtcNow.AddHours(7)
+                };
+
+                context.Stores.Add(systemStore);
+                await context.SaveChangesAsync();
+            }
+
             var managers = context.Users
                 .Where(u => u.UserName != null && u.UserName.Contains("manager"))
                 .ToList();
@@ -176,7 +147,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.StoreCustomers.Any()) return;
 
-            var store = context.Stores.FirstOrDefault();
+            var store = context.Stores.FirstOrDefault(s => s.Id != DefaultStoreId);
             if (store == null) return;
 
             var customerRoleId = Guid.Parse("33333333-3333-3333-3333-333333333333");
@@ -204,8 +175,9 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Pets.Any()) return;
 
-            var storeCustomers = context.StoreCustomers.ToList();
-            if (!storeCustomers.Any()) return;
+            var storeCustomers = context.StoreCustomers
+                .Where(sc => sc.StoreId != DefaultStoreId)
+                .ToList();
 
             var random = new Random();
             var petData = new[]
@@ -247,8 +219,9 @@ namespace EXE_PET_HUB.Infrastructure.Data
             if (context.Appointments.Any()) return;
 
             // Lấy toàn bộ danh sách Pet đang có (bao gồm cả thông tin CustomerId của nó)
-            var allPets = context.Pets.ToList();
-            if (!allPets.Any()) return;
+            var allPets = context.Pets
+                .Where(p => p.StoreId != DefaultStoreId)
+                .ToList();
 
             var random = new Random();
             var appointments = new List<Appointment>();
@@ -328,11 +301,21 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Items.Any()) return;
 
-            var store = context.Stores.FirstOrDefault();
+            
+            var basicPlanId = "55555555-5555-5555-5555-555555555555";
+            var proPlanId = "66666666-6666-6666-6666-666666666666";
+            var businessPlanId = "77777777-7777-7777-7777-777777777777";
+
+            var store = context.Stores.FirstOrDefault(s => s.Id != DefaultStoreId);
             if (store == null) return;
 
             var items = new List<Item>
             {
+                //plan
+                new Item { Id = basicPlanId, StoreId = DefaultStoreId, Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
+                new Item { Id = proPlanId, StoreId = DefaultStoreId, Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
+                new Item { Id = businessPlanId, StoreId = DefaultStoreId, Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 },
+
                 // Dịch vụ (Service)
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Khám tổng quát", Price = 150000, Type = ItemType.Service },
                 new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Tiêm phòng dại (Rabies)", Price = 120000, Type = ItemType.Service },
@@ -358,8 +341,8 @@ namespace EXE_PET_HUB.Infrastructure.Data
             if (context.Invoices.Any()) return;
 
             // Lấy danh sách cuộc hẹn và các món hàng (Items) để tính tiền
-            var appointments = context.Appointments.Where(a => a.Status == AppointmentStatus.Completed).ToList();
-            var items = context.Items.ToList();
+            var appointments = context.Appointments.Where(a => a.Status == AppointmentStatus.Completed && a.StoreId != DefaultStoreId).ToList();
+            var items = context.Items.Where(i => i.StoreId != DefaultStoreId).ToList();
 
             if (!appointments.Any() || !items.Any()) return;
 
