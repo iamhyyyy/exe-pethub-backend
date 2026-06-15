@@ -1,5 +1,6 @@
-﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXE_PET_HUB.API.Controllers
@@ -15,12 +16,14 @@ namespace EXE_PET_HUB.API.Controllers
             _itemService = itemService;
         }
         [HttpGet("item")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<List<ItemDto>>> GetAll()
         {
             var items = await _itemService.GetAllAsync();
             return Ok(items);
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ItemDto>> GetById(string id)
         {
             var item = await _itemService.GetByIdAsync(id);
@@ -28,12 +31,14 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(item);
         }
         [HttpPost]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<ItemDto>> Create(CreateItemDto dto)
         {
             var createdItem = await _itemService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdItem.Id }, createdItem);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult> Update(string id, UpdateItemDto dto)
         {
             var updated = await _itemService.UpdateAsync(id, dto);

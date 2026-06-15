@@ -2,6 +2,7 @@
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -9,6 +10,7 @@ namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize]  // Cả Manager lẫn Customer đều dùng được
     public class AppointmentController : ControllerBase
     {
         private readonly AppointmentService _appointmentService;
