@@ -9,6 +9,7 @@ namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize]  // Mặc định phải login
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -18,13 +19,16 @@ namespace EXE_PET_HUB.API.Controllers
             _userService = userService;
         }
 
+        // Chỉ Admin mới được xem toàn bộ danh sách user
         [HttpGet("users")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<UserDto>>> GetAll()
         {
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
 
+        // Mọi role đều xem được profile theo ID (user tự xem profile mình)
         [HttpGet("user/{id}")]
         public async Task<ActionResult<UserDto>> GetById(Guid id)
         {
@@ -33,8 +37,8 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(user);
         }
 
+        // Mọi role đều tự update profile của mình
         [HttpPut("user/{id}")]
-        
         public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
         {
             if (id != dto.Id)
@@ -46,4 +50,4 @@ namespace EXE_PET_HUB.API.Controllers
 
     }
 
-}
+}

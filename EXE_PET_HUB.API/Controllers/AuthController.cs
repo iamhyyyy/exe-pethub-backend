@@ -48,7 +48,7 @@ namespace EXE_PET_HUB.API.Controllers
 
         [HttpPost("registerManager")]
         [EnableRateLimiting("OtpPolicy")]
-        public async Task<IActionResult> RegisterManager([FromBody] RegisterRequest request)
+        public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerRequest request)
         {
             var (success, message) = await _authService.RegisterManagerAsync(request);
             if (!success)

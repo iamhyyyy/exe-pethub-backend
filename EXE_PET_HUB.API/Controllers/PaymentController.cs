@@ -21,6 +21,7 @@ namespace EXE_PET_HUB.API.Controllers
         /// FE gọi → nhận checkoutUrl → redirect user sang trang thanh toán PayOS.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "manager")]  // Chỉ Manager tạo link thanh toán
         public async Task<IActionResult> CreatePaymentLink([FromBody] CreatePaymentDto dto)
         {
             try

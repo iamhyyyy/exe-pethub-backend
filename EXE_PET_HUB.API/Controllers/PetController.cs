@@ -2,6 +2,7 @@
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -9,6 +10,7 @@ namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
+     // Phải login mới dùng được. Customer & Manager đều ok
     public class PetController : ControllerBase
     {
         private readonly PetService _petService;
@@ -21,6 +23,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("pets")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<List<PetDto>>> GetAll()
         {
             var pets = await _petService.GetAllAsync();
@@ -28,6 +31,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("pet/{id}")]
+        [Authorize]
         public async Task<ActionResult<PetDto>> GetById(string id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -36,6 +40,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("pets/customer/{customerId}")]
+        [Authorize]
         public async Task<ActionResult<List<PetDto>>> GetByCustomerId(Guid customerId)
         {
             var pets = await _petService.GetByCustomerIdAsync(customerId);
@@ -43,6 +48,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("pets/count/customer/{customerId}")]
+        [Authorize]
         public async Task<ActionResult<int>> CountPetByCustomerId(Guid customerId)
         {
             var count = await _petService.CountPetByCustomerIdAsync(customerId);
@@ -50,6 +56,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost("pet")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
         {
             var pet = await _petService.CreateAsync(dto);
@@ -57,6 +64,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPatch("pet/{id}")]
+        [Authorize]
         public async Task<ActionResult> Update(string id, UpdatePetDto dto)
         {
             var pet = await _petService.Update(id, dto);

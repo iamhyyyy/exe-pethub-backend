@@ -149,9 +149,39 @@ namespace EXE_PET_HUB.API
                 });
             });
 
-            //Swagger
+            //Swagger with JWT Bearer support
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "PetHub API", Version = "v1" });
+
+                // Thêm definition cho Bearer token
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Nhập JWT token vào đây. Ví dụ: eyJhbGci..."
+                });
+
+                // Bắt buộc truyền Bearer token với mọi request
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
 
             var app = builder.Build();
@@ -210,11 +240,11 @@ namespace EXE_PET_HUB.API
             });
 
             //environment variable for port, default to 8080 if not set
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Run($"http://0.0.0.0:{port}");
+            //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            //app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            // app.Run();
+            app.Run();
         }
     }
 }

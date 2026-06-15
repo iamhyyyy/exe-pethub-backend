@@ -1,6 +1,7 @@
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXE_PET_HUB.API.Controllers
@@ -17,6 +18,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<InvoiceDto>>> GetAll()
         {
             var items = await _invoiceService.GetAllAsync();
@@ -24,6 +26,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<InvoiceDto>> GetById(string id)
         {
             var item = await _invoiceService.GetByIdAsync(id);
@@ -32,6 +35,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("customer/{customerId}")]
+        [Authorize]
         public async Task<ActionResult<List<InvoiceDto>>> GetAllByCusID(Guid customerId)
         {
             var items = await _invoiceService.GetAllByCusIDAsync(customerId);
@@ -39,6 +43,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("invoice-detail/{invoiceId}")]
+        [Authorize]
         public async Task<ActionResult<List<InvoiceDetailsDto>>> GetDetailByInvoiceID(string invoiceId)
         {
             var items = await _invoiceService.GetInvoiceDetailsAsync(invoiceId);
@@ -46,6 +51,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<ResponseInvoiceOfCreateDto>> Create(CreateInvoiceDto dto)
         {
             var createdInvoice = await _invoiceService.CreateInvoiceAsync(dto);
@@ -53,6 +59,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpPatch("confirm-transaction/{invoiceid}")]
+        [Authorize(Roles = "manager")]
         public async Task<IActionResult> MarkAsPaid(string invoiceid)
         {
             try
