@@ -135,6 +135,19 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     IsActive = true,
                     CreateAt = DateTime.UtcNow.AddHours(7),
                     UpdateAt = DateTime.UtcNow.AddHours(7)
+                },
+                new Store
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    // Nếu cậu có nhiều manager, có thể đổi thành managers[1].Id cho đa dạng nhé
+                    ManagerId = managers.Count > 1 ? managers[1].Id : managers[0].Id,
+                    Name = "Pet Hub Bình Thạnh",
+                    Address = "456 Điện Biên Phủ, Phường 25, Quận Bình Thạnh, TP.HCM",
+                    Phone = "0909876543",
+                    storeImage = "",
+                    IsActive = true,
+                    CreateAt = DateTime.UtcNow.AddHours(7),
+                    UpdateAt = DateTime.UtcNow.AddHours(7)
                 }
             };
 
@@ -147,8 +160,9 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.StoreCustomers.Any()) return;
 
-            var store = context.Stores.FirstOrDefault(s => s.Id != DefaultStoreId);
-            if (store == null) return;
+            // LẤY TẤT CẢ các cửa hàng thực tế (Bỏ qua DefaultStoreId)
+            var realStores = context.Stores.Where(s => s.Id != DefaultStoreId).ToList();
+            if (!realStores.Any()) return;
 
             var customerRoleId = Guid.Parse("33333333-3333-3333-3333-333333333333");
             var customerIds = context.UserRoles
@@ -158,10 +172,12 @@ namespace EXE_PET_HUB.Infrastructure.Data
 
             if (!customerIds.Any()) return;
 
+            var random = new Random();
             var storeCustomers = customerIds.Select(customerId => new StoreCustomer
             {
                 Id = Guid.NewGuid().ToString(),
-                StoreId = store.Id,
+                // RANDOM ngẫu nhiên một store thực tế cho khách hàng
+                StoreId = realStores[random.Next(realStores.Count)].Id,
                 CustomerId = customerId,
                 CreateAt = DateTime.UtcNow.AddHours(7)
             }).ToList();
@@ -175,9 +191,12 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Pets.Any()) return;
 
+            // Lấy danh sách StoreCustomer của các store thực tế
             var storeCustomers = context.StoreCustomers
                 .Where(sc => sc.StoreId != DefaultStoreId)
                 .ToList();
+
+            if (!storeCustomers.Any()) return;
 
             var random = new Random();
             var petData = new[]
@@ -196,11 +215,12 @@ namespace EXE_PET_HUB.Infrastructure.Data
 
             var pets = petData.Select(data =>
             {
+                // Bốc ngẫu nhiên 1 cặp khách hàng - cửa hàng thực tế
                 var storeCustomer = storeCustomers[random.Next(storeCustomers.Count)];
                 return new Pet
                 {
                     Id = Guid.NewGuid().ToString(),
-                    StoreId = storeCustomer.StoreId,
+                    StoreId = storeCustomer.StoreId, // Ăn theo store thực tế của khách hàng
                     CustomerId = storeCustomer.CustomerId,
                     Name = data.Name,
                     Species = data.Species,
@@ -218,18 +238,17 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Appointments.Any()) return;
 
-            // Lấy toàn bộ danh sách Pet đang có (bao gồm cả thông tin CustomerId của nó)
             var allPets = context.Pets
                 .Where(p => p.StoreId != DefaultStoreId)
                 .ToList();
 
+            if (!allPets.Any()) return;
+
             var random = new Random();
             var appointments = new List<Appointment>();
 
-            // Tạo 10 lịch hẹn mẫu
             for (int i = 1; i <= 10; i++)
             {
-                // Chọn ngẫu nhiên 1 con pet từ danh sách
                 var selectedPet = allPets[random.Next(allPets.Count)];
 
                 appointments.Add(new Appointment
@@ -237,12 +256,12 @@ namespace EXE_PET_HUB.Infrastructure.Data
                     Id = Guid.NewGuid().ToString(),
                     PetId = selectedPet.Id,
                     CustomerId = selectedPet.CustomerId,
-                    StoreId = selectedPet.StoreId,
-                    AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7).AddDays(i)), // Lịch hẹn từ mai trở đi
-                    StartTime = new TimeOnly(8 + (i % 8), 0), // Giờ bắt đầu từ 8h sáng rải rác ra
+                    StoreId = selectedPet.StoreId, // Đồng bộ đúng chi nhánh mà Pet đăng ký
+                    AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7).AddDays(i)),
+                    StartTime = new TimeOnly(8 + (i % 8), 0),
                     EndTime = new TimeOnly(9 + (i % 8), 0),
                     AppointmentNote = $"Lịch hẹn kiểm tra sức khỏe định kỳ lần thứ {i}",
-                    Status = (AppointmentStatus)(random.Next(0, 3)), // Random status: Confirmed, Completed, Cancelled
+                    Status = (AppointmentStatus)(random.Next(0, 3)),
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 });
@@ -301,35 +320,40 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Items.Any()) return;
 
-            
             var basicPlanId = "55555555-5555-5555-5555-555555555555";
             var proPlanId = "66666666-6666-6666-6666-666666666666";
             var businessPlanId = "77777777-7777-7777-7777-777777777777";
 
-            var store = context.Stores.FirstOrDefault(s => s.Id != DefaultStoreId);
-            if (store == null) return;
+            // LẤY DANH SÁCH các store thực tế
+            var realStores = context.Stores.Where(s => s.Id != DefaultStoreId).ToList();
+            if (!realStores.Any()) return;
 
+            var random = new Random();
+
+            // Định nghĩa các gói Plan (giữ nguyên StoreId = DefaultStoreId hệ thống)
             var items = new List<Item>
             {
-                //plan
                 new Item { Id = basicPlanId, StoreId = DefaultStoreId, Name = "Gói Cơ Bản", Price = 500000, Type = ItemType.Plan, DurationInDays = 30 },
                 new Item { Id = proPlanId, StoreId = DefaultStoreId, Name = "Gói Chuyên Nghiệp", Price = 2500000, Type = ItemType.Plan, DurationInDays = 180 },
-                new Item { Id = businessPlanId, StoreId = DefaultStoreId, Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 },
-
-                // Dịch vụ (Service)
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Khám tổng quát", Price = 150000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Tiêm phòng dại (Rabies)", Price = 120000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Combo Tắm & Cắt tỉa lông", Price = 350000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Lưu chuồng (Hotel) - 1 ngày", Price = 200000, Type = ItemType.Service },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Tẩy giun sán", Price = 80000, Type = ItemType.Service },
-
-                // Sản phẩm (Product)
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Thức ăn hạt Royal Canin 1kg", Price = 250000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product },
-                new Item { Id = Guid.NewGuid().ToString(), StoreId = store.Id, Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product }
+                new Item { Id = businessPlanId, StoreId = DefaultStoreId, Name = "Gói Doanh Nghiệp", Price = 4500000, Type = ItemType.Plan, DurationInDays = 365 }
             };
+
+            // Hàm phụ trợ để bốc ngẫu nhiên 1 store Id thực tế
+            string GetRandomStoreId() => realStores[random.Next(realStores.Count)].Id;
+
+            // Thêm các Dịch vụ (Bốc ngẫu nhiên StoreId)
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Khám tổng quát", Price = 150000, Type = ItemType.Service });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Tiêm phòng dại (Rabies)", Price = 120000, Type = ItemType.Service });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Combo Tắm & Cắt tỉa lông", Price = 350000, Type = ItemType.Service });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Lưu chuồng (Hotel) - 1 ngày", Price = 200000, Type = ItemType.Service });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Tẩy giun sán", Price = 80000, Type = ItemType.Service });
+
+            // Thêm các Sản phẩm (Bốc ngẫu nhiên StoreId)
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Thức ăn hạt Royal Canin 1kg", Price = 250000, Type = ItemType.Product });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Pate cho mèo Whiskas", Price = 15000, Type = ItemType.Product });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Sữa tắm khử mùi cho chó", Price = 180000, Type = ItemType.Product });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Cát vệ sinh đậu nành 6L", Price = 135000, Type = ItemType.Product });
+            items.Add(new Item { Id = Guid.NewGuid().ToString(), StoreId = GetRandomStoreId(), Name = "Đồ chơi xương gặm cao su", Price = 45000, Type = ItemType.Product });
 
             context.Items.AddRange(items);
             await context.SaveChangesAsync();
@@ -340,11 +364,14 @@ namespace EXE_PET_HUB.Infrastructure.Data
         {
             if (context.Invoices.Any()) return;
 
-            // Lấy danh sách cuộc hẹn và các món hàng (Items) để tính tiền
-            var appointments = context.Appointments.Where(a => a.Status == AppointmentStatus.Completed && a.StoreId != DefaultStoreId).ToList();
-            var items = context.Items.Where(i => i.StoreId != DefaultStoreId).ToList();
+            var appointments = context.Appointments
+                .Where(a => a.Status == AppointmentStatus.Completed && a.StoreId != DefaultStoreId)
+                .ToList();
 
-            if (!appointments.Any() || !items.Any()) return;
+            // Lấy toàn bộ hàng hóa dịch vụ
+            var allItems = context.Items.ToList();
+
+            if (!appointments.Any() || !allItems.Any()) return;
 
             var random = new Random();
             var invoices = new List<Invoice>();
@@ -355,11 +382,17 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 var invoiceDetails = new List<InvoiceDetail>();
                 decimal total = 0;
 
-                // Mỗi hóa đơn tớ sẽ cho ngẫu nhiên từ 1 đến 3 món hàng/dịch vụ
+                // LỌC CHUẨN: Chỉ lấy những món hàng thuộc CHÍNH STORE ĐÓ hoặc thuộc DEFAULT (Gói Plan hệ thống nếu có mua kèm)
+                var storeSpecificItems = allItems
+                    .Where(i => i.StoreId == appt.StoreId || i.StoreId == DefaultStoreId)
+                    .ToList();
+
+                if (!storeSpecificItems.Any()) continue;
+
                 int numberOfItems = random.Next(1, 4);
                 for (int i = 0; i < numberOfItems; i++)
                 {
-                    var selectedItem = items[random.Next(items.Count)];
+                    var selectedItem = storeSpecificItems[random.Next(storeSpecificItems.Count)];
                     var quantity = random.Next(1, 3);
                     var subtotal = selectedItem.Price * quantity;
 
@@ -371,7 +404,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                         ItemName = selectedItem.Name,
                         Price = selectedItem.Price,
                         Quantity = quantity,
-                        Subtotal = subtotal // Chuyển về double cho khớp với property của cậu
+                        Subtotal = subtotal
                     });
 
                     total += subtotal;
@@ -380,7 +413,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 invoices.Add(new Invoice
                 {
                     Id = invoiceId,
-                    StoreId = appt.StoreId,
+                    StoreId = appt.StoreId, // Đồng bộ chuẩn Store chi nhánh
                     AppointmentId = appt.Id,
                     PetId = appt.PetId,
                     CustomerId = appt.CustomerId,

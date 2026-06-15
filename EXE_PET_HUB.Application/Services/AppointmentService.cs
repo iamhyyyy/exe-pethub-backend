@@ -22,9 +22,20 @@ namespace EXE_PET_HUB.Application.Services
             _emailService = emailService;
         }
 
+        //public async Task<List<AppointmentDto>> GetAllAsync()
+        //{
+        //    var appointments = await _unitOfWork.AppointmentRepository.GetAllAsync();
+        //    return _mapper.Map<List<AppointmentDto>>(appointments);
+        //}
+
         public async Task<List<AppointmentDto>> GetAllAsync()
         {
-            var appointments = await _unitOfWork.AppointmentRepository.GetAllAsync();
+           var appointments = await _unitOfWork.AppointmentRepository.GetAllAsync();
+           return _mapper.Map<List<AppointmentDto>>(appointments);
+        }
+        public async Task<List<AppointmentDto>> GetAllAsyncByStoreId(string storeId)
+        {
+            var appointments = await _unitOfWork.AppointmentRepository.GetAllAsyncByStoreId(storeId);
 
             return _mapper.Map<List<AppointmentDto>>(appointments);
         }
@@ -59,8 +70,8 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointment.Id);
-            var emailBody = WriteEmailContent(appointment);
-            await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Confirmation for " + appointment.Pet.Name, emailBody);
+            var emailBody = WriteEmailContent(appointment!);
+            await _emailService.SendEmailAsync(appointment!.Customer.Email!, "Appointment Confirmation for " + appointment.Pet.Name, emailBody);
 
             return _mapper.Map<AppointmentDto>(appointment);
         }
@@ -77,8 +88,8 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
-            var emailBody = WriteEmailContent(appointment);
-            await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Update for " + appointment.Pet.Name, emailBody);
+            var emailBody = WriteEmailContent(appointment!);
+            await _emailService.SendEmailAsync(appointment!.Customer.Email!, "Appointment Update for " + appointment.Pet.Name, emailBody);
 
             return true;
         }
@@ -94,8 +105,8 @@ namespace EXE_PET_HUB.Application.Services
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
-            var emailBody = WriteEmailContent(appointment);
-            await _emailService.SendEmailAsync(appointment.Customer.Email, "Appointment Cancellation for " + appointment.Pet.Name, emailBody);
+            var emailBody = WriteEmailContent(appointment!);
+            await _emailService.SendEmailAsync(appointment!.Customer.Email!, "Appointment Cancellation for " + appointment.Pet.Name, emailBody);
 
             return true;
         }

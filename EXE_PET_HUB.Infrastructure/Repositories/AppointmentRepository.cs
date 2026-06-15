@@ -6,12 +6,12 @@ using EXE_PET_HUB.Domain.Enums;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
-    public class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
+    public class AppointmentRepository : StoreGenericRepository<Appointment>, IAppointmentRepository
     {
-        private readonly AppDbContext _context;
+        //private readonly AppDbContext _context;
         public AppointmentRepository(AppDbContext context) : base(context)
         {
-            _context = context;
+            //_context = context;
         }
 
         public async Task<Appointment?> GetByIdAsync(string id)

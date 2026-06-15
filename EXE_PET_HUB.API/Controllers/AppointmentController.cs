@@ -18,14 +18,30 @@ namespace EXE_PET_HUB.API.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet("appointments")]
-        public async Task<ActionResult<List<AppointmentDto>>> GetAll()
+        //[HttpGet("appointments")]
+        //public async Task<ActionResult<List<AppointmentDto>>> GetAll()
+        //{
+        //    var appointments = await _appointmentService.GetAllAsync();
+        //    return Ok(appointments);
+        //}
+        
+
+        [HttpGet("appointments/store/{storeId}")]
+        public async Task<ActionResult<List<AppointmentDto>>> GetAllByStoreId(string storeId)
         {
-            var appointments = await _appointmentService.GetAllAsync();
+            var appointments = await _appointmentService.GetAllAsyncByStoreId(storeId);
             return Ok(appointments);
         }
 
-        [HttpGet("appointment/{id}")]
+        //[HttpGet("appointment/{id}")]
+        //public async Task<ActionResult<AppointmentDto>> GetById(string id)
+        //{
+        //    var appointment = await _appointmentService.GetByIdAsync(id);
+        //    if (appointment == null) return NotFound();
+        //    return Ok(appointment);
+        //}
+
+        [HttpGet("appointment/{id}/store/{storeId}")]
         public async Task<ActionResult<AppointmentDto>> GetById(string id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
