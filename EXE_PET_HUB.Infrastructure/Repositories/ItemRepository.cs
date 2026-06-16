@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
-    public class ItemRepository : GenericRepository<Item>, IItemRepository
+    public class ItemRepository : StoreGenericRepository<Item>, IItemRepository
     {
         public ItemRepository(AppDbContext context) : base(context)
         {

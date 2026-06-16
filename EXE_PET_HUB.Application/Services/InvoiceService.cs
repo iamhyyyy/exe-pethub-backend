@@ -24,34 +24,34 @@ namespace EXE_PET_HUB.Application.Services
             _emailService = emailService;
         }
 
-        public async Task<List<InvoiceDto>> GetAllAsync()
+        public async Task<List<InvoiceDto>> GetAllAsync(string storeId)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesAsync();
+            var items = await _unitOfWork.InvoiceRepository.GetAllAsyncByStoreId(storeId);
             return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
         }
 
-        public async Task<InvoiceDto?> GetByIdAsync(string id)
+        public async Task<InvoiceDto?> GetByIdAsync(string id, string storeId)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(id);
+            var items = await _unitOfWork.InvoiceRepository.GetByIdAsyncAndByStoreId(id, storeId);
             return items == null ? null : _mapper.Map<InvoiceDto>(items);
         }
 
-        public async Task<List<InvoiceDto>> GetAllByCusIDAsync(Guid cusID)
+        public async Task<List<InvoiceDto>> GetAllByCusIDAsync(Guid cusID, string storeId)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesByCusIDAsync(cusID);
+            var items = await _unitOfWork.InvoiceRepository.GetAllInvoicesByCusIDAndWithStoreIDAsync(cusID, storeId);
             return items == null ? null : _mapper.Map<List<InvoiceDto>>(items);
         }
 
-        public async Task<List<InvoiceDetailsDto>> GetInvoiceDetailsAsync(string invoiceID)
+        public async Task<List<InvoiceDetailsDto>> GetInvoiceDetailsAsync(string invoiceID, string storeId)
         {
-            var items = await _unitOfWork.InvoiceRepository.GetDetailsAsync(invoiceID);
+            var items = await _unitOfWork.InvoiceRepository.GetDetailsAsync(invoiceID, storeId);
             return items == null ? null : _mapper.Map<List<InvoiceDetailsDto>>(items);
         }
 
-        public async Task<bool> MarkAsPaidAsync(string invoiceId)
+        public async Task<bool> MarkAsPaidAsync(string invoiceId, string storeId)
         {
             // 1. Lấy invoice theo ID
-            var invoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(invoiceId);
+            var invoice = await _unitOfWork.InvoiceRepository.GetByIdAsyncAndByStoreId(invoiceId, storeId);
             if (invoice == null)
                 throw new Exception("Invoice not found");
             // 2. Kiểm tra trạng thái hiện tại — chỉ cho phép Pending → Paid
@@ -60,12 +60,12 @@ namespace EXE_PET_HUB.Application.Services
             // 3. Cập nhật status
             invoice.Status = InvoiceStatus.Paid;
             // 4. Gọi Update từ GenericRepository (đã có sẵn)
-             _unitOfWork.InvoiceRepository.Update(invoice);
+             _unitOfWork.InvoiceRepository.UpdateByStoreId(storeId, invoice);
             await _unitOfWork.CompleteAsync();
             return true;
         }
 
-        public async Task<ResponseInvoiceOfCreateDto> CreateInvoiceAsync(CreateInvoiceDto dto)
+        public async Task<ResponseInvoiceOfCreateDto> CreateInvoiceAsync(CreateInvoiceDto dto, string storeId)
         {
             if (dto.Details == null || !dto.Details.Any())
             {
@@ -103,7 +103,7 @@ namespace EXE_PET_HUB.Application.Services
 
             // Fetch Items to get their real prices and names
             var itemIds = dto.Details.Select(d => d.ItemId).Distinct().ToList();
-            var items = await _unitOfWork.ItemRepository.FindAsync(i => itemIds.Contains(i.Id));
+            var items = await _unitOfWork.ItemRepository.FindAsyncByStoreId(storeId ,i => itemIds.Contains(i.Id));
 
             if (items.Count != itemIds.Count)
             {
@@ -143,11 +143,11 @@ namespace EXE_PET_HUB.Application.Services
 
             invoice.TotalAmount = totalAmount;
 
-            await _unitOfWork.InvoiceRepository.AddAsync(invoice);
+            await _unitOfWork.InvoiceRepository.AddAsyncByStoreId(storeId, invoice);
             await _unitOfWork.CompleteAsync();
 
             // Fetch the fully populated invoice to map navigation properties correctly
-            var savedInvoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(invoice.Id);
+            var savedInvoice = await _unitOfWork.InvoiceRepository.GetInvoiceByIdAndWithStoreIDAsync(invoice.Id, storeId);
 
             // Send Email if Customer exists and has email
             if (customer != null && !string.IsNullOrEmpty(customer.Email))

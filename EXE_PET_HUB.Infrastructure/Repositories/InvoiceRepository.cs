@@ -12,45 +12,48 @@ using System.Threading.Tasks;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
-    public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
+    public class InvoiceRepository : StoreGenericRepository<Invoice>, IInvoiceRepository
     {
         private readonly AppDbContext _context;
         public InvoiceRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
-        public async Task<List<Invoice>> GetAllInvoicesAsync()
+        public async Task<List<Invoice>> GetAllInvoicesWithStoreIDAsync(string storeId)
         {
             return await _context.Invoices
                 .Include(i => i.Pet)
                 .Include(i => i.Appointment)
                 .Include(i => i.Customer)
+                .Where(i =>  i.StoreId == storeId)
                 .ToListAsync();
         }
 
-        public async Task<Invoice> GetInvoiceAsync(string invoiceId)
+        public async Task<Invoice> GetInvoiceByIdAndWithStoreIDAsync(string invoiceId, string storeId)
         {
             return await _context.Invoices
                 .Include(i => i.Pet)
                 .Include(i => i.Appointment)
                 .Include(i => i.Customer)
-                .Where(i => i.Id == invoiceId)
+                .Where(i => i.Id == invoiceId && i.StoreId == storeId)
                 .SingleOrDefaultAsync();
         }
-        public async Task<List<Invoice>> GetAllInvoicesByCusIDAsync(Guid customerId)
+        public async Task<List<Invoice>> GetAllInvoicesByCusIDAndWithStoreIDAsync(Guid customerId, string storeId)
         {
             return await _context.Invoices
                 .Include(i => i.Pet)
                 .Include(i => i.Appointment)
                 .Include(i => i.Customer)
-                .Where(i => i.CustomerId == customerId)
+                .Where(i => i.CustomerId == customerId && i.StoreId == storeId)
                 .ToListAsync();
         }
 
-        public async Task<List<InvoiceDetail>> GetDetailsAsync(string invoiceID)
+        public async Task<List<InvoiceDetail>> GetDetailsAsync(string invoiceID, string storeId)
         {
+            // Join qua Invoice để kiểm tra invoice có thuộc đúng Store không
             return await _context.InvoiceDetails
-                .Where(i => i.InvoiceId == invoiceID)
+                .Include(d => d.Invoice)
+                .Where(d => d.InvoiceId == invoiceID && d.Invoice.StoreId == storeId)
                 .ToListAsync();
         }
 

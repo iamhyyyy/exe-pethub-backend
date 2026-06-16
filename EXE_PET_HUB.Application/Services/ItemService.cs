@@ -19,33 +19,33 @@ namespace EXE_PET_HUB.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<List<ItemDto>> GetAllAsync()
+        public async Task<List<ItemDto>> GetAllAsync(string storeId)
         {
-            var items = await _unitOfWork.Repository<Item>().GetAllAsync();
+            var items = await _unitOfWork.ItemRepository.GetAllAsyncByStoreId(storeId);
             return _mapper.Map<List<ItemDto>>(items);
         }
 
-        public async Task<ItemDto?> GetByIdAsync(string id)
+        public async Task<ItemDto?> GetByIdAsync(string storeId, string id)
         {
-            var item = await _unitOfWork.Repository<Item>().GetByIdAsync(id);
+            var item = await _unitOfWork.ItemRepository.GetByIdAsyncAndByStoreId(id, storeId);
             return item == null ? null : _mapper.Map<ItemDto>(item);
         }
 
-        public async Task<ItemDto> CreateAsync(CreateItemDto dto)
+        public async Task<ItemDto> CreateAsync(string storeId, CreateItemDto dto)
         {
             var item = _mapper.Map<Item>(dto);
             item.Id = Guid.NewGuid().ToString();
-            await _unitOfWork.Repository<Item>().AddAsync(item);
+            await _unitOfWork.ItemRepository.AddAsyncByStoreId(storeId, item);
             await _unitOfWork.CompleteAsync();
             return _mapper.Map<ItemDto>(item);
         }
 
-        public async Task<bool> UpdateAsync(string id, UpdateItemDto dto)
+        public async Task<bool> UpdateAsync(string storeId, string id, UpdateItemDto dto)
         {
-            var item = await _unitOfWork.Repository<Item>().GetByIdAsync(id);
+            var item = await _unitOfWork.ItemRepository.GetByIdAsyncAndByStoreId(id, storeId);
             if (item == null) return false;
             _mapper.Map(dto, item);
-            _unitOfWork.Repository<Item>().Update(item);
+            _unitOfWork.ItemRepository.UpdateByStoreId(storeId, item);
             await _unitOfWork.CompleteAsync();
             return true;
         }

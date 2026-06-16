@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace EXE_PET_HUB.Application.Interfaces
 {
-    public interface IInvoiceRepository : IGenericRepository<Invoice>
+    public interface IInvoiceRepository : IStoreGenericRepository<Invoice>
     {
-        Task<List<Invoice>> GetAllInvoicesAsync();
-        Task<List<Invoice>> GetAllInvoicesByCusIDAsync(Guid customerID);
-        Task<List<InvoiceDetail>> GetDetailsAsync(string InvoiceID);
-        Task<Invoice> GetInvoiceAsync(string invoiceId);
+        Task<List<Invoice>> GetAllInvoicesWithStoreIDAsync(string storeId);
+        Task<List<Invoice>> GetAllInvoicesByCusIDAndWithStoreIDAsync(Guid customerID, string storeId);
+        Task<List<InvoiceDetail>> GetDetailsAsync(string InvoiceID, string storeId);
+        Task<Invoice> GetInvoiceByIdAndWithStoreIDAsync(string invoiceId, string storeId);
         Task<Invoice> GetInvoiceByOrderCodeAsync(long orderCode);
     }
 }

@@ -1,5 +1,6 @@
 using EXE_PET_HUB.Application.DTOs.Auth;
 using EXE_PET_HUB.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -48,6 +49,7 @@ namespace EXE_PET_HUB.API.Controllers
 
         [HttpPost("registerManager")]
         [EnableRateLimiting("OtpPolicy")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerRequest request)
         {
             var (success, message) = await _authService.RegisterManagerAsync(request);

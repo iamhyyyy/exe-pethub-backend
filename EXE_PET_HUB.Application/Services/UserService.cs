@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Domain.Entities;
@@ -78,6 +78,27 @@ namespace EXE_PET_HUB.Application.Services
             }
 
             return _mapper.Map<ResponeUserDto>(user);
+        }
+
+        public async Task<List<UserDto>> GetAllCustomersByStoreAsync(string storeId)
+        {
+            var users = await _unitOfWork.UserRepository.GetAllCustomersByStoreIdAsync(storeId);
+
+            var dtoUsers = _mapper.Map<List<UserDto>>(users);
+
+            foreach (var user in users)
+            {
+                foreach (var dtoUser in dtoUsers)
+                {
+                    if (dtoUser.Id == user.Id)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        dtoUser.Role = roles.FirstOrDefault() ?? "customer";
+                    }
+                }
+            }
+
+            return dtoUsers;
         }
 
         private async Task SendProfileUpdatedEmailAsync(User user,string? oldFirstName, string? oldLastName)
