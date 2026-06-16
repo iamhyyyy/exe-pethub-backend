@@ -32,7 +32,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
         public async Task<string> CreatePaymentLinkAsync(CreatePaymentDto dto)
         {
             // 1. Kiểm tra Invoice tồn tại và đang ở trạng thái Pending
-            var invoice = await _unitOfWork.InvoiceRepository.GetInvoiceAsync(dto.InvoiceId);
+            var invoice = await _unitOfWork.InvoiceRepository.GetInvoiceByIdAndWithStoreIDAsync(dto.InvoiceId, dto.StoreId);
 
             if (invoice == null)
                 throw new Exception($"Invoice '{dto.InvoiceId}' không tìm thấy.");

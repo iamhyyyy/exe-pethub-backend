@@ -18,10 +18,11 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<List<InvoiceDto>>> GetAll()
         {
-            var items = await _invoiceService.GetAllAsync();
+            var id = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var items = await _invoiceService.GetAllAsync(id);
             return Ok(items);
         }
 
@@ -29,7 +30,8 @@ namespace EXE_PET_HUB.API.Controllers
         [Authorize]
         public async Task<ActionResult<InvoiceDto>> GetById(string id)
         {
-            var item = await _invoiceService.GetByIdAsync(id);
+            var stoid = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var item = await _invoiceService.GetByIdAsync(id, stoid);
             if (item == null) return NotFound();
             return Ok(item);
         }
@@ -38,7 +40,8 @@ namespace EXE_PET_HUB.API.Controllers
         [Authorize]
         public async Task<ActionResult<List<InvoiceDto>>> GetAllByCusID(Guid customerId)
         {
-            var items = await _invoiceService.GetAllByCusIDAsync(customerId);
+            var id = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var items = await _invoiceService.GetAllByCusIDAsync(customerId, id);
             return Ok(items);
         }
 
@@ -46,7 +49,10 @@ namespace EXE_PET_HUB.API.Controllers
         [Authorize]
         public async Task<ActionResult<List<InvoiceDetailsDto>>> GetDetailByInvoiceID(string invoiceId)
         {
-            var items = await _invoiceService.GetInvoiceDetailsAsync(invoiceId);
+            var storeId = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            if (string.IsNullOrEmpty(storeId))
+                return Unauthorized(new { message = "StoreId not found in token." });
+            var items = await _invoiceService.GetInvoiceDetailsAsync(invoiceId, storeId);
             return Ok(items);
         }
 
@@ -54,7 +60,8 @@ namespace EXE_PET_HUB.API.Controllers
         [Authorize(Roles = "manager")]
         public async Task<ActionResult<ResponseInvoiceOfCreateDto>> Create(CreateInvoiceDto dto)
         {
-            var createdInvoice = await _invoiceService.CreateInvoiceAsync(dto);
+            var id = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var createdInvoice = await _invoiceService.CreateInvoiceAsync(dto, id);
             return CreatedAtAction(nameof(GetById), new { id = createdInvoice.Id }, createdInvoice);
         }
 
@@ -64,7 +71,8 @@ namespace EXE_PET_HUB.API.Controllers
         {
             try
             {
-                var result = await _invoiceService.MarkAsPaidAsync(invoiceid);
+                var id = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+                var result = await _invoiceService.MarkAsPaidAsync(invoiceid, id);
                 return Ok(new { message = "Invoice marked as Paid successfully", invoiceId = invoiceid });
             }
             catch (Exception ex)

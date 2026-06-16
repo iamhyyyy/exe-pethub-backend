@@ -277,7 +277,6 @@ namespace EXE_PET_HUB.Infrastructure.Services
         new Claim(ClaimTypes.Email,          user.Email),
         new Claim(ClaimTypes.Role,           role)
     };
-            // Thêm StoreId vào token nếu có (manager hoặc customer đã chọn store)
             if (!string.IsNullOrEmpty(storeId))
                 claims.Add(new Claim("StoreId", storeId));
             var token = new JwtSecurityToken(
