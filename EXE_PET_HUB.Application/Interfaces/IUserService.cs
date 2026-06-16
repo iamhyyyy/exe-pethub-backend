@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Application.DTOs;
+using EXE_PET_HUB.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +12,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         Task<List<UserDto>> GetAllAsync();
         Task<UserDto?> GetByIdAsync(Guid id);
         Task<ResponeUserDto> UpdateAsync(UpdateUserDto dto);
+        Task<List<UserDto>> GetAllCustomersByStoreAsync(string storeId);
     }
 }

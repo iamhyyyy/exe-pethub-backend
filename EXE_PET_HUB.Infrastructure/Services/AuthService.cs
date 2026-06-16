@@ -105,8 +105,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
                 FirstName = request.FirstName,
                 LastName = request.LastName,
             };
-            var result = await _userManager.CreateAsync(user, request.Password); /* chỗ này password thì Asp.Net yêu cầu t nhất 6 ký tự
-                                                                                  Có chữ hoa, chữ thường, Có số, Có ký tự đặc biệt(@, !, #...)*/
+            var result = await _userManager.CreateAsync(user, request.Password); 
             if (!result.Succeeded)
             {
                 // Identity trả về lỗi cụ thể (password yếu, thiếu ký tự đặc biệt...)
@@ -115,6 +114,24 @@ namespace EXE_PET_HUB.Infrastructure.Services
             }
             // 4. Gán role mặc định là "customer"
             await _userManager.AddToRoleAsync(user, "customer");
+
+            // 4b. Validate StoreId có tồn tại và đang active không
+            if (string.IsNullOrEmpty(request.StoreId))
+                return (false, "StoreId is required.");
+            var store = await _context.Stores
+                .FirstOrDefaultAsync(s => s.Id == request.StoreId && s.IsActive);
+            if (store == null)
+                return (false, "Store not found or is inactive.");
+            // 4c. Tạo liên kết customer ↔ store trong bảng StoreCustomer
+            var storeCustomer = new StoreCustomer
+            {
+                Id = Guid.NewGuid().ToString(),
+                StoreId = request.StoreId,
+                CustomerId = user.Id,
+                CreateAt = DateTime.UtcNow.AddHours(7)
+            };
+            _context.StoreCustomers.Add(storeCustomer);
+            await _context.SaveChangesAsync();
 
             // 5. Tạo token xác nhận email từ ASP.NET Identity
             var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -9,7 +9,6 @@ namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Authorize]  // Mặc định phải login
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -27,9 +26,9 @@ namespace EXE_PET_HUB.API.Controllers
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
-
         // Mọi role đều xem được profile theo ID (user tự xem profile mình)
         [HttpGet("user/{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDto>> GetById(Guid id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -39,6 +38,7 @@ namespace EXE_PET_HUB.API.Controllers
 
         // Mọi role đều tự update profile của mình
         [HttpPut("user/{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
         {
             if (id != dto.Id)
@@ -48,6 +48,17 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(result);
         }
 
-    }
+        // Manager lấy danh sách tất cả customer thuộc store của mình
+        [HttpGet("users/store")]
+        [Authorize(Roles = "manager")]
+        public async Task<ActionResult<List<UserDto>>> GetCustomersByStore()
+        {
+            var storeId = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            if (string.IsNullOrEmpty(storeId))
+                return Unauthorized(new { message = "StoreId not found in token." });
 
+            var users = await _userService.GetAllCustomersByStoreAsync(storeId);
+            return Ok(users);
+        }
+    }
 }
