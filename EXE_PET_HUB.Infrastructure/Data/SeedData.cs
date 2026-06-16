@@ -67,6 +67,7 @@ namespace EXE_PET_HUB.Infrastructure.Data
 
             await CreateUserAsync(userManager, "admin", "nguyenhuy3112005@gmail.com", "Admin@123", "Admin", "User", "admin");
             await CreateUserAsync(userManager, "manager", "kietdtse183938@fpt.edu.vn", "Manager@123", "Manager", "User", "manager");
+            await CreateUserAsync(userManager, "manager1", "smartcarwash2505@gmail.com", "Manager@123", "Manager1", "User", "manager");
             await CreateUserAsync(userManager, "customer", "huyndse184016@fpt.edu.vn", "Customer@123", "Customer", "User", "customer");
         }
 

@@ -11,62 +11,59 @@ namespace EXE_PET_HUB.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
+        private readonly ICurrentUserService _currentUser;
 
         string statusColor = "#333"; // Mặc định
         string customMessage = "We are writing to update you on your appointment status.";
 
-        public AppointmentService(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService)
+        public AppointmentService(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService, ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _emailService = emailService;
+            _currentUser = currentUser;
         }
 
-        //public async Task<List<AppointmentDto>> GetAllAsync()
-        //{
-        //    var appointments = await _unitOfWork.AppointmentRepository.GetAllAsync();
-        //    return _mapper.Map<List<AppointmentDto>>(appointments);
-        //}
 
         public async Task<List<AppointmentDto>> GetAllAsync()
         {
-           var appointments = await _unitOfWork.AppointmentRepository.GetAllAsync();
-           return _mapper.Map<List<AppointmentDto>>(appointments);
-        }
-        public async Task<List<AppointmentDto>> GetAllAsyncByStoreId(string storeId)
-        {
-            var appointments = await _unitOfWork.AppointmentRepository.GetAllAsyncByStoreId(storeId);
-
+            var storeId = _currentUser.GetStoreId();
+            var appointments = await _unitOfWork.AppointmentRepository.GetAllAsyncByStoreId(storeId!);
             return _mapper.Map<List<AppointmentDto>>(appointments);
         }
 
         public async Task<AppointmentDto?> GetByIdAsync(string id)
         {
-            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
+            var storeId = _currentUser.GetStoreId();
+            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsyncByStoreId(id, storeId!);
 
             return appointment == null ? null : _mapper.Map<AppointmentDto>(appointment);
         }
 
         public async Task<List<AppointmentDto>> GetByPetIdAsync(string petId)
         {
-            var appointments = await _unitOfWork.AppointmentRepository.GetByPetIdAsync(petId);
+            var storeId = _currentUser.GetStoreId();
+            var appointments = await _unitOfWork.AppointmentRepository.GetByPetIdAsyncAndStoreId(petId, storeId!);
             return _mapper.Map<List<AppointmentDto>>(appointments);
         }
 
         public async Task<List<AppointmentDto>> GetByCustomerIdAsync(Guid customerId)
         {
-            var appointments = await _unitOfWork.AppointmentRepository.GetByCustomerIdAsync(customerId);
+            var storeId = _currentUser.GetStoreId();    
+            var appointments = await _unitOfWork.AppointmentRepository.GetByCustomerIdAsyncAndStoreId(customerId, storeId!);
             return _mapper.Map<List<AppointmentDto>>(appointments);
         }
 
         public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto)
         {
+            var storeId = _currentUser.GetStoreId();
+
             var appointment = _mapper.Map<Appointment>(dto);
             appointment.Id = Guid.NewGuid().ToString();
             appointment.Status = AppointmentStatus.Confirmed;
             appointment.CreatedAt = DateTime.UtcNow.AddHours(7);
             appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
-            await _unitOfWork.AppointmentRepository.AddAsync(appointment);
+            await _unitOfWork.AppointmentRepository.AddAsyncByStoreId(storeId!, appointment);
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointment.Id);
@@ -78,13 +75,15 @@ namespace EXE_PET_HUB.Application.Services
 
         public async Task<bool> Update(string id, UpdateAppointmentDto dto)
         {
+            var storeId = _currentUser.GetStoreId();
+
             var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
             if (appointment == null) return false;
 
             _mapper.Map(dto, appointment);
             appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
-            _unitOfWork.AppointmentRepository.Update(appointment);
+            _unitOfWork.AppointmentRepository.UpdateByStoreId(storeId!, appointment);
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
@@ -96,12 +95,14 @@ namespace EXE_PET_HUB.Application.Services
 
         public async Task<bool> Delete(string id)
         {
+            var storeId = _currentUser.GetStoreId();
+
             var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
             if (appointment == null) return false;
 
             appointment.Status = AppointmentStatus.Cancelled;
 
-            _unitOfWork.AppointmentRepository.Update(appointment);
+            _unitOfWork.AppointmentRepository.UpdateByStoreId(storeId!, appointment);
             await _unitOfWork.CompleteAsync();
 
             appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);

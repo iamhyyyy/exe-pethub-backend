@@ -58,6 +58,7 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             builder.Services.AddSingleton<IReminderService, ReminderService>();
             builder.Services.AddHostedService<AppointmentReminderWorker>();
@@ -67,6 +68,8 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IStorePackageRepository, StorePackageRepository>();
             builder.Services.AddScoped<IPayOsService, PayOsService>();
             builder.Services.AddControllers();
+            // Allow services to access the current HttpContext (to read user claims like StoreId)
+            builder.Services.AddHttpContextAccessor();
             //AddRateLimiter
             builder.Services.AddRateLimiter(options =>
             {
@@ -244,7 +247,7 @@ namespace EXE_PET_HUB.API
             app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            //  app.Run();
+            //app.Run();
         }
     }
 }

@@ -23,17 +23,26 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<List<Appointment>> GetByCustomerIdAsync(Guid customerId)
+        public async Task<Appointment?> GetByIdAsyncByStoreId(string id, string storeId)
         {
             return await _context.Appointments
-                .Where(a => a.CustomerId == customerId)
+                .Include(p => p.Customer)
+                .Include(p => p.Pet)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == id && a.StoreId == storeId);
+        }
+
+        public async Task<List<Appointment>> GetByCustomerIdAsyncAndStoreId(Guid customerId, string storeId)
+        {
+            return await _context.Appointments
+                .Where(a => a.CustomerId == customerId && a.StoreId == storeId)
                 .ToListAsync();
         }
 
-        public async Task<List<Appointment>> GetByPetIdAsync(string petId)
+        public async Task<List<Appointment>> GetByPetIdAsyncAndStoreId(string petId, string storeId)
         {
             return await _context.Appointments
-                .Where(a => a.PetId == petId)
+                .Where(a => a.PetId == petId && a.StoreId == storeId)
                 .ToListAsync();
         }
 
