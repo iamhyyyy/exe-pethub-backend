@@ -2,6 +2,7 @@ using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EXE_PET_HUB.API.Controllers
 {

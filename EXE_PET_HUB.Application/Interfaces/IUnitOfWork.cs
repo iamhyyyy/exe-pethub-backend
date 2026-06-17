@@ -13,5 +13,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         IUserRepository UserRepository { get; }
         IStorePackageRepository StorePackageRepository { get; }
         IStoreRepository StoreRepository { get; }
+        IPlatformPlanRepository PlatformPlanRepository { get; }
     }
 }

@@ -17,6 +17,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         private IUserRepository? _userRepository;
         private IStorePackageRepository? _storePackageRepository;
         private IStoreRepository? _storeRepository;
+        private IPlatformPlanRepository? _platformPlanRepository;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -50,6 +51,7 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         public IStorePackageRepository StorePackageRepository => _storePackageRepository ??= new StorePackageRepository(_context);
         public IInvoiceRepository InvoiceRepository => _invoiceRepository ??= new InvoiceRepository(_context);
         public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_context);
+        public IPlatformPlanRepository PlatformPlanRepository => _platformPlanRepository ??= new PlatformPlanRepository(_context);
         public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();

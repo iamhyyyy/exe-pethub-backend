@@ -20,20 +20,15 @@ namespace EXE_PET_HUB.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _authService.LoginAsync(request);
-
-            // Phân biệt rõ lý do thất bại cần kiểm tra thêm từ service
             if (user == null)
                 return Unauthorized(new { message = "Wrong email/password, or account not confirmed yet." });
 
             return Ok(user);
         }
-        // Logout ở REST API: client tự xóa token ở phía mình
-        // Nếu muốn có endpoint cho rõ ràng:
+
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            // Không cần xử lý gì phía server với JWT
-            // Client xóa token khỏi localStorage/cookie là xong
             return Ok(new { message = "Logout Successfully!" });
         }
 
