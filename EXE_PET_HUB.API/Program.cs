@@ -45,6 +45,9 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<AppointmentReminderService>();
             builder.Services.AddScoped<IAppointmentReminderRepository, AppointmentReminderRepository>();
 
+            builder.Services.AddScoped<StoreService>();
+            builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped(typeof(IStoreGenericRepository<>), typeof(StoreGenericRepository<>));
@@ -67,6 +70,8 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IStorePackageService, StorePackageService>();
             builder.Services.AddScoped<IStorePackageRepository, StorePackageRepository>();
             builder.Services.AddScoped<IPayOsService, PayOsService>();
+
+            
             builder.Services.AddControllers();
             // Allow services to access the current HttpContext (to read user claims like StoreId)
             builder.Services.AddHttpContextAccessor();
@@ -247,7 +252,7 @@ namespace EXE_PET_HUB.API
             app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            //app.Run();
+            // app.Run();
         }
     }
 }
