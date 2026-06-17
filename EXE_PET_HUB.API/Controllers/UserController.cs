@@ -26,7 +26,6 @@ namespace EXE_PET_HUB.API.Controllers
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
-        // Mọi role đều xem được profile theo ID (user tự xem profile mình)
         [HttpGet("user/{id}")]
         [Authorize]
         public async Task<ActionResult<UserDto>> GetById(Guid id)
