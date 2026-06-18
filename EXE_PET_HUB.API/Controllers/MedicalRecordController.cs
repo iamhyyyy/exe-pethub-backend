@@ -11,21 +11,19 @@ namespace EXE_PET_HUB.API.Controllers
     public class MedicalRecordController : ControllerBase
     {
         private readonly MedicalRecordService _recordService;
-        private readonly IEmailService _emailService;
 
-        public MedicalRecordController(MedicalRecordService recordService, IEmailService emailService)
+        public MedicalRecordController(MedicalRecordService recordService)
         {
             _recordService = recordService;
-            _emailService = emailService;
         }
 
-        [HttpGet("medical_records")]
-        [Authorize(Roles = "manager")]
-        public async Task<ActionResult<List<MedicalRecordDto>>> GetAll()
-        {
-            var records = await _recordService.GetAllAsync();
-            return Ok(records);
-        }
+        //[HttpGet("medical_records")]
+        //[Authorize(Roles = "manager")]
+        //public async Task<ActionResult<List<MedicalRecordDto>>> GetAll()
+        //{
+        //    var records = await _recordService.GetAllAsync();
+        //    return Ok(records);
+        //}
 
         [HttpGet("medical_record/{id}")]
         [Authorize]

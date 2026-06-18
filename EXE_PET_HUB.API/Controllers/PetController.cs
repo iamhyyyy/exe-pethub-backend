@@ -4,22 +4,18 @@ using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
-     // Phải login mới dùng được. Customer & Manager đều ok
     public class PetController : ControllerBase
     {
         private readonly PetService _petService;
-        private readonly IEmailService _emailService;
 
-        public PetController(PetService petService, IEmailService emailService)
+        public PetController(PetService petService)
         {
             _petService = petService;
-            _emailService = emailService;
         }
 
         [HttpGet("pets")]
@@ -72,17 +68,6 @@ namespace EXE_PET_HUB.API.Controllers
             return NoContent();
         }
 
-        //[HttpGet("test")]
-        //public async Task<IActionResult> SendTest()
-        //{
-        //    await _emailService.SendEmailAsync(
-        //        "huyndse184016@fpt.edu.vn",
-        //        "Test Mail",
-        //        "Hello from PetHub 🐶"
-        //    );
-
-        //    return Ok("Email sent");
-        //}
     }
 
 }
