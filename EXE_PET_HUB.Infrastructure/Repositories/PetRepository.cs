@@ -5,16 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EXE_PET_HUB.Infrastructure.Repositories
 {
-    public class PetRepository : GenericRepository<Pet>, IPetRepository
+    public class PetRepository : StoreGenericRepository<Pet>, IPetRepository
     {
-        private readonly AppDbContext _context;
+        //private readonly AppDbContext _context;
         public PetRepository(AppDbContext context) : base(context)
         {
-            _context = context;
+            //_context = context;
         }
-        public async Task<List<Pet>> GetByCustomerIdAsync(Guid customerId)
+        public async Task<List<Pet>> GetByCustomerIdAsyncAndStoreId(Guid customerId, string storeId)
         {
-            return await _context.Pets.Where(p => p.CustomerId == customerId).ToListAsync();
+            return await _context.Pets
+                .Where(p => p.CustomerId == customerId && p.StoreId == storeId)
+                .ToListAsync();
 
         }
     }

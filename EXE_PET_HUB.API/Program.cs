@@ -252,7 +252,7 @@ namespace EXE_PET_HUB.API
             app.Run($"http://0.0.0.0:{port}");
 
             //chạy test local thì dùng cái này cho nhanh, chạy trên server thì dùng cái trên
-            // app.Run();
+            //app.Run();
         }
     }
 }
