@@ -23,7 +23,7 @@ namespace EXE_PET_HUB.API.Controllers
         }
 
         [HttpGet("stores")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<List<StoreDto>>> GetAll()
         {
             var stores = await _storeService.GetAllAsync();
