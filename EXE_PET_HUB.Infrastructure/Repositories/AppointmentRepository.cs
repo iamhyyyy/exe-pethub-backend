@@ -23,14 +23,14 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<Appointment?> GetByIdAsyncByStoreId(string id, string storeId)
-        {
-            return await _context.Appointments
-                .Include(p => p.Customer)
-                .Include(p => p.Pet)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == id && a.StoreId == storeId);
-        }
+        //public async Task<Appointment?> GetByIdAsyncByStoreId(string id, string storeId)
+        //{
+        //    return await _context.Appointments
+        //        .Include(p => p.Customer)
+        //        .Include(p => p.Pet)
+        //        .AsNoTracking()
+        //        .FirstOrDefaultAsync(a => a.Id == id && a.StoreId == storeId);
+        //}
 
         public async Task<List<Appointment>> GetByCustomerIdAsyncAndStoreId(Guid customerId, string storeId)
         {

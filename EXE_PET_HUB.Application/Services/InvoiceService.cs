@@ -86,7 +86,7 @@ namespace EXE_PET_HUB.Application.Services
 
             if (appointmentId != null)
             {
-                var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsyncByStoreId(appointmentId, storeId);
+                var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsyncAndByStoreId(appointmentId, storeId);
                 if (appointment == null) throw new Exception("Invalid AppointmentId");
             }
 

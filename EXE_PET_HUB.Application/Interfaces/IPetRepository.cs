@@ -2,9 +2,9 @@
 
 namespace EXE_PET_HUB.Application.Interfaces
 {
-    public interface IPetRepository : IGenericRepository<Pet>
+    public interface IPetRepository : IStoreGenericRepository<Pet>
     {
-        Task<List<Pet>> GetByCustomerIdAsync(Guid customerId);
+        Task<List<Pet>> GetByCustomerIdAsyncAndStoreId(Guid customerId, string storeId);
 
     }
 }

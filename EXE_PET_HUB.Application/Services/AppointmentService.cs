@@ -35,8 +35,7 @@ namespace EXE_PET_HUB.Application.Services
         public async Task<AppointmentDto?> GetByIdAsync(string id)
         {
             var storeId = _currentUser.GetStoreId();
-            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsyncByStoreId(id, storeId!);
-
+            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsyncAndByStoreId(id, storeId!);
             return appointment == null ? null : _mapper.Map<AppointmentDto>(appointment);
         }
 
