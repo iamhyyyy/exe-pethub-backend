@@ -11,5 +11,12 @@ namespace EXE_PET_HUB.Infrastructure.Repositories
         {
             
         }
+
+        public async Task<List<Store>> GetAllAsync()
+        {
+            return await _context.Stores
+                .Where(p => p.Id != "44444444-4444-4444-4444-444444444444")
+                .ToListAsync();
+        }
     }
 }
