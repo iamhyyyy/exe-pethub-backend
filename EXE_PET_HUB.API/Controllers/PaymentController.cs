@@ -94,11 +94,9 @@ namespace EXE_PET_HUB.API.Controllers
             });
         }
 
-        /// <summary>
-        /// API 4 (Bonus): Query trạng thái giao dịch từ PayOS theo orderCode.
-        /// Dùng để check thủ công khi cần debug.
-        /// </summary>
+
         [HttpGet("info/{orderCode}")]
+        [Authorize]
         public async Task<IActionResult> GetPaymentInfo(long orderCode)
         {
             try
@@ -112,10 +110,9 @@ namespace EXE_PET_HUB.API.Controllers
             }
         }
 
-        /// <summary>
-        /// API 5 (Bonus): Hủy payment link theo orderCode.
-        /// </summary>
+
         [HttpDelete("{orderCode}")]
+        [Authorize]
         public async Task<IActionResult> CancelPayment(long orderCode)
         {
             try

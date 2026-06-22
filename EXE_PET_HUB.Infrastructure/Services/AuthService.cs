@@ -92,37 +92,31 @@ namespace EXE_PET_HUB.Infrastructure.Services
         }
         public async Task<(bool Success, string Message)> RegisterAsync(RegisterRequest request)
         {
-            // 2. Kiểm tra email đã tồn tại chưa
             var existingEmail = await _userManager.FindByEmailAsync(request.Email);
             if (existingEmail != null)
                 return (false, "Email already exists");
-            // 3. Tạo User mới — Identity tự hash password,
             var user = new User
             {
                 UserName = request.UserName,
                 Email = request.Email,
-                EmailConfirmed = false,  // ← Chưa xác nhận, phải click link trong mail
+                EmailConfirmed = false,  
                 FirstName = request.FirstName,
                 LastName = request.LastName,
             };
             var result = await _userManager.CreateAsync(user, request.Password); 
             if (!result.Succeeded)
             {
-                // Identity trả về lỗi cụ thể (password yếu, thiếu ký tự đặc biệt...)
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return (false, errors);
             }
-            // 4. Gán role mặc định là "customer"
             await _userManager.AddToRoleAsync(user, "customer");
 
-            // 4b. Validate StoreId có tồn tại và đang active không
             if (string.IsNullOrEmpty(request.StoreId))
-                return (false, "StoreId is required.");
+                return (false, "Mã Cửa Hàng Không Được Để Trống.");
             var store = await _context.Stores
                 .FirstOrDefaultAsync(s => s.Id == request.StoreId && s.IsActive);
             if (store == null)
-                return (false, "Store not found or is inactive.");
-            // 4c. Tạo liên kết customer ↔ store trong bảng StoreCustomer
+                return (false, "Không Tìm Thấy Cửa Hàng Hoặc Cửa Hàng Đang Ngưng Hoạt Động.");
             var storeCustomer = new StoreCustomer
             {
                 Id = Guid.NewGuid().ToString(),
@@ -133,31 +127,28 @@ namespace EXE_PET_HUB.Infrastructure.Services
             _context.StoreCustomers.Add(storeCustomer);
             await _context.SaveChangesAsync();
 
-            // 5. Tạo token xác nhận email từ ASP.NET Identity
             var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedToken = WebUtility.UrlEncode(confirmToken); // Encode vì token có ký tự đặc biệt
+            var encodedToken = WebUtility.UrlEncode(confirmToken);
 
-            // 6. Tạo link xác nhận — trỏ về API endpoint confirm-email
             var baseUrl = _configuration["AppSettings:BaseUrl"];
             var confirmLink = $"{baseUrl}/confirm-email?userId={user.Id}&token={encodedToken}";
 
-            // 7. Gửi mail chứa link xác nhận
             var emailSent = true;
             try
             {
                 var subject = "[PetHub] Confirm your account 🐾";
                 var body = $"""
-                    <h2>Hello {user.UserName}!</h2>
-                    <p>Your account has been successfully created on <strong>PetHub</strong>.</p>
-                    <p>Now you can login and start managing your pets.</p>
+                    <h2>Xin chào {user.UserName}!</h2>
+                    <p>Tài khoản của bạn đã được tạo thành công trên <strong>PetHub</strong>.</p>
+                    <p>Bây giờ bạn có thể đăng nhập và bắt đầu quản lý thú cưng của mình.</p>
                     <br/>
                     <a href="{confirmLink}" 
                        style="background:#4CAF50;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;">
-                         Confirm your account
+                         Xác Nhận Tài Khoản
                     </a>
                     <br/><br/>
-                    <p><small>Link will expire in 24 hours. If you did not register, please ignore this email.</small></p>
-                    <p>Sincerely,<br/>PetHub Team 🐶🐱</p>
+                    <p><small>Liên Kết Sẽ Hết Hạn Sau 24 Giờ. Nếu Bạn Không Đăng Ký Tài Khoản, Vui Lòng Bỏ Qua Email Này.</small></p>
+                    <p>Trân Trọng,<br/>Đội Ngũ PetHub 🐶🐱</p>
                     """;
 
                 await _emailService.SendEmailAsync(user.Email, subject, body);
@@ -168,25 +159,23 @@ namespace EXE_PET_HUB.Infrastructure.Services
             }
 
             var message = emailSent
-                ? "Register successfully! Please check your email to confirm your account."
-                : "Register successfully! (Confirmation email could not be sent, please contact support)";
+                ? "Đăng Ký Tài Khoản Thành Công! Vui Lòng Kiểm Tra Email Để Xác Nhận Tài Khoản."
+                : "Đăng Ký Tài Khoản Thành Công! Vui Lòng Kiểm Tra Email Để Xác Nhận Tài Khoản.";
 
             return (true, message);
         }
 
         public async Task<(bool Success, string Message)> RegisterManagerAsync(RegisterManagerRequest request)
         {
-            // 1. Kiểm tra email đã tồn tại chưa
             var existingEmail = await _userManager.FindByEmailAsync(request.Email);
             if (existingEmail != null)
-                return (false, "Email already exists");
+                return (false, "Email đã tồn tại");
 
-            // 2. Tạo User Manager — Identity tự hash password
             var user = new User
             {
                 UserName = request.UserName,
                 Email = request.Email,
-                EmailConfirmed = true,   // Admin tạo → không cần confirm email
+                EmailConfirmed = true,   
                 FirstName = request.FirstName,
                 LastName = request.LastName,
             };
@@ -197,10 +186,8 @@ namespace EXE_PET_HUB.Infrastructure.Services
                 return (false, errors);
             }
 
-            // 3. Gán role manager
             await _userManager.AddToRoleAsync(user, "manager");
 
-            // 4. Tạo Store cho Manager này — cấp StoreId luôn tại đây
             var store = new Store
             {
                 Id = Guid.NewGuid().ToString(),
@@ -215,7 +202,6 @@ namespace EXE_PET_HUB.Infrastructure.Services
             _context.Stores.Add(store);
             await _context.SaveChangesAsync();
 
-            // 5. Gửi email thông báo kèm thông tin đăng nhập + StoreId
             var baseUrl = _configuration["AppSettings:BaseUrl"];
             var directLink = $"{baseUrl}/auth/login";
             var emailSent = true;
@@ -259,27 +245,57 @@ namespace EXE_PET_HUB.Infrastructure.Services
         }
         public async Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token)
         {
-            // 1. Tìm user theo Id
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return (false, "Invalid confirmation link.");
+                return (false, "Liên Kết Xác Nhận Không Hợp Lệ.");
 
-            // 2. Đã xác nhận rồi thì không cần làm gì thêm
             if (user.EmailConfirmed)
-                return (true, "Email already confirmed. You can login now.");
-
-            // 3. Decode token (vì khi gửi đã UrlEncode)
-            //var decodedToken = WebUtility.UrlDecode(token);
-
-            // 4. Gọi Identity để xác nhận — tự động set EmailConfirmed = true trong DB
+                return (true, "Email đã được xác nhận. Bạn có thể đăng nhập ngay bây giờ.");
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                return (false, $"Email confirmation failed: {errors}");
+                return (false, $"Xác Nhận Email Thất Bại: {errors}");
             }
 
-            return (true, "Email confirmed successfully! You can now login.");
+            return (true, "Email đã được xác nhận. Bạn có thể đăng nhập ngay bây giờ.");
+        }
+
+        public async Task<(bool Success, string Message)> JoinStoreAsync(JoinStoreRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+                return (false, "Tài Khoản Không Tồn Tại !");
+
+        
+            if (!user.EmailConfirmed)
+                return (false, "Tài Khoản Chưa Được Xác Nhận Email!");
+
+            var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+            if (!passwordCheck.Succeeded)
+                return (false, "Sai Mật Khẩu!");
+
+            var store = await _context.Stores
+                .FirstOrDefaultAsync(s => s.Id == request.StoreId && s.IsActive);
+            if (store == null)
+                return (false, "Không Tìm Thấy Cửa Hàng!");
+
+            var alreadyJoined = await _context.StoreCustomers
+                .AnyAsync(sc => sc.StoreId == request.StoreId && sc.CustomerId == user.Id);
+            if (alreadyJoined)
+                return (false, "Tài Khoản Đã Tồn Tại Trong Cửa Hàng Này!");
+
+            var storeCustomer = new StoreCustomer
+            {
+                Id = Guid.NewGuid().ToString(),
+                StoreId = request.StoreId,
+                CustomerId = user.Id,
+                CreateAt = DateTime.UtcNow.AddHours(7)
+            };
+            _context.StoreCustomers.Add(storeCustomer);
+            await _context.SaveChangesAsync();
+
+            return (true, $"Đăng Ký Tài Khoản Vào Cửa Hàng Thành Công!");
         }
 
         private string GenerateJwtToken(User user, string role, string? storeId = null)
@@ -287,7 +303,7 @@ namespace EXE_PET_HUB.Infrastructure.Services
             var jwtKey = _configuration["Jwt:Key"]!;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new List<Claim>  // ← đổi array [] thành List<> để thêm động
+            var claims = new List<Claim> 
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name,           user.UserName),
