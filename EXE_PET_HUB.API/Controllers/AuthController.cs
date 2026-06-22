@@ -53,6 +53,16 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(new { message });
         }
 
+        [HttpPost("join-store")]
+        [EnableRateLimiting("OtpPolicy")]
+        public async Task<IActionResult> JoinStore([FromBody] JoinStoreRequest request)
+        {
+            var (success, message) = await _authService.JoinStoreAsync(request);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
 
         // User click link trong email → gọi endpoint này
         // Link dạng: GET /api/auth/confirm-email?userId=xxx&token=yyy

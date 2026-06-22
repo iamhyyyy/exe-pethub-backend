@@ -13,5 +13,6 @@ namespace EXE_PET_HUB.Application.Interfaces
         Task<(bool Success, string Message)> RegisterAsync(RegisterRequest request);
         Task<(bool Success, string Message)> RegisterManagerAsync(RegisterManagerRequest request);// đăng ký
         Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token); // xác nhận email
+        Task<(bool Success, string Message)> JoinStoreAsync(JoinStoreRequest request);       // user cũ tham gia thêm store
     }
 }
