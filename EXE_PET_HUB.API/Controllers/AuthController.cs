@@ -63,9 +63,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(new { message });
         }
 
-
-        // User click link trong email → gọi endpoint này
-        // Link dạng: GET /api/auth/confirm-email?userId=xxx&token=yyy
         [HttpGet("confirm-email")]
         [EnableRateLimiting("OtpPolicy")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
@@ -78,7 +75,6 @@ namespace EXE_PET_HUB.API.Controllers
             if (!success)
                 return BadRequest(new { message });
 
-            // Trả về trang thông báo thành công (hoặc redirect về frontend)
             return Ok(new { message });
         }
     }

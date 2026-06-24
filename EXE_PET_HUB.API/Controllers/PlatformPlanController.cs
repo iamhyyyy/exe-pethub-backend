@@ -16,7 +16,6 @@ namespace EXE_PET_HUB.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // Tất cả role đều xem được danh sách gói (chỉ active)
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAll()
@@ -25,7 +24,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(plans);
         }
 
-        // Xem chi tiết 1 gói (dùng khi manager chọn gói để mua)
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetById(string id)
@@ -35,7 +33,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(plan);
         }
 
-        // Chỉ Admin mới tạo được gói mới
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody] PlatformPlan dto)
@@ -54,7 +51,6 @@ namespace EXE_PET_HUB.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = plan.Id }, plan);
         }
 
-        // Chỉ Admin mới cập nhật gói
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(string id, [FromBody] PlatformPlan dto)
@@ -72,7 +68,7 @@ namespace EXE_PET_HUB.API.Controllers
             return NoContent();
         }
 
-        // Chỉ Admin mới xóa (ẩn) gói — soft delete bằng IsActive = false
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(string id)
@@ -80,7 +76,6 @@ namespace EXE_PET_HUB.API.Controllers
             var plan = await _unitOfWork.PlatformPlanRepository.GetByIdAsync(id);
             if (plan == null) return NotFound(new { message = "Không tìm thấy gói." });
 
-            // Soft delete — ẩn gói thay vì xóa hẳn để không ảnh hưởng lịch sử
             plan.IsActive = false;
             _unitOfWork.PlatformPlanRepository.Update(plan);
             await _unitOfWork.CompleteAsync();

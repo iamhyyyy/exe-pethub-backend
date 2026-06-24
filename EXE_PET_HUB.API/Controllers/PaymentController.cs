@@ -16,12 +16,8 @@ namespace EXE_PET_HUB.API.Controllers
             _payOsService = payOsService;
         }
 
-        /// <summary>
-        /// API 1: Tạo payment link PayOS.
-        /// FE gọi → nhận checkoutUrl → redirect user sang trang thanh toán PayOS.
-        /// </summary>
         [HttpPost]
-        [Authorize(Roles = "manager")]  // Chỉ Manager tạo link thanh toán
+        [Authorize(Roles = "manager")] 
         public async Task<IActionResult> CreatePaymentLink([FromBody] CreatePaymentDto dto)
         {
             try
@@ -35,12 +31,6 @@ namespace EXE_PET_HUB.API.Controllers
             }
         }
 
-        /// <summary>
-        /// API 2: Webhook từ PayOS (server-to-server).
-        /// PayOS gọi endpoint này sau khi có kết quả thanh toán.
-        /// Đây là nơi DUY NHẤT cập nhật trạng thái Invoice trong DB.
-        /// PayOS yêu cầu response HTTP 200 — nếu không sẽ retry nhiều lần.
-        /// </summary>
         [HttpPost("webhook")]
         [AllowAnonymous]
         public async Task<IActionResult> PayOsWebhook()
@@ -54,11 +44,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(new { success });
         }
 
-        /// <summary>
-        /// API 3: ReturnURL — PayOS redirect browser user về đây sau khi thanh toán.
-        /// Đây chỉ để hiển thị kết quả cho user, KHÔNG cập nhật DB (DB đã được cập nhật qua webhook).
-        /// Khi FE có trang kết quả riêng, đổi PayOS:ReturnUrl trong appsettings sang URL của FE.
-        /// </summary>
         [HttpGet("return")]
         [AllowAnonymous]
         public IActionResult PaymentReturn(
@@ -68,7 +53,6 @@ namespace EXE_PET_HUB.API.Controllers
             [FromQuery] long orderCode,
             [FromQuery] string cancel)
         {
-            // PayOS trả code "00" là thành công
             if (code == "00" && status == "PAID")
                 return Ok(new
                 {

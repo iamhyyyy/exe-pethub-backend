@@ -10,7 +10,6 @@ namespace EXE_PET_HUB.API.Controllers
 {
     [ApiController]
     [Route("api")]
-     // Phải login mới dùng được. Customer & Manager đều ok
     public class StoreController : ControllerBase
     {
         private readonly StoreService _storeService;

@@ -17,7 +17,7 @@ namespace EXE_PET_HUB.API.Controllers
             _itemService = itemService;
         }
         [HttpGet("item")]
-        [Authorize(Roles = "manager")]
+        [Authorize(Roles = "manager,customer")]
         public async Task<ActionResult<List<ItemDto>>> GetAll()
         {
             var id = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;

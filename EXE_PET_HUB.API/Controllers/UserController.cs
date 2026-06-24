@@ -18,7 +18,6 @@ namespace EXE_PET_HUB.API.Controllers
             _userService = userService;
         }
 
-        // Chỉ Admin mới được xem toàn bộ danh sách user
         [HttpGet("users")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<UserDto>>> GetAll()
@@ -35,7 +34,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(user);
         }
 
-        // Mọi role đều tự update profile của mình
         [HttpPut("user/{id}")]
         [Authorize]
         public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
@@ -47,7 +45,6 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(result);
         }
 
-        // Manager lấy danh sách tất cả customer thuộc store của mình
         [HttpGet("users/store")]
         [Authorize(Roles = "manager")]
         public async Task<ActionResult<List<UserDto>>> GetCustomersByStore()
