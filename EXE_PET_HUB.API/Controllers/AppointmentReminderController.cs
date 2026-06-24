@@ -20,12 +20,12 @@ namespace EXE_PET_HUB.API.Controllers
             _emailService = emailService;
         }
 
-        //[HttpGet("reminds")]
-        //public async Task<ActionResult<List<AppointmentReminderDto>>> GetAll()
-        //{
-        //    var reminds = await _appointmentReminderService.GetAllAsync();
-        //    return Ok(reminds);
-        //}
+        [HttpGet("reminds")]
+        public async Task<ActionResult<List<AppointmentReminderDto>>> GetAll()
+        {
+            var reminds = await _appointmentReminderService.GetAllAsync();
+            return Ok(reminds);
+        }
 
         [HttpGet("remind/{id}")]
         public async Task<ActionResult<AppointmentReminderDto>> GetById(string id)
