@@ -16,6 +16,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
+        public string? ImageUrl { get; set; }
     }
     // DTO để Frontend gửi lên khi tạo mới (không cần Id)
     public class CreateItemDto
@@ -24,6 +25,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
+        public string? ImageUrl { get; set; }
     }
     // DTO để Frontend gửi lên khi cập nhật
     public class UpdateItemDto
@@ -31,6 +33,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
+        public string? ImageUrl { get; set; }
     }
 
 }

@@ -71,6 +71,10 @@ namespace EXE_PET_HUB.API
             builder.Services.AddScoped<IStorePackageRepository, StorePackageRepository>();
             builder.Services.AddScoped<IPayOsService, PayOsService>();
 
+            // Cloudinary image upload service
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+
             
             builder.Services.AddControllers();
             // Allow services to access the current HttpContext (to read user claims like StoreId)

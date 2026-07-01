@@ -25,6 +25,9 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public DateOnly? DateOfBirth { get; set; }
 
+        [Column(TypeName = "varchar(500)")]
+        public string? ImageUrl { get; set; }
+
         [ForeignKey(nameof(CustomerId))]
         public User Customer { get; set; } = null!;
 

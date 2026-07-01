@@ -17,6 +17,9 @@ namespace EXE_PET_HUB.Domain.Entities
 
         public DateTime? PremiumExpiredAt { get; set; }
 
+        [Column(TypeName = "varchar(500)")]
+        public string? ImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);

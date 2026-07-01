@@ -21,6 +21,9 @@ namespace EXE_PET_HUB.Domain.Entities
         public ItemType Type { get; set; }
         public int? DurationInDays { get; set; }
 
+        [Column(TypeName = "varchar(500)")]
+        public string? ImageUrl { get; set; }
+
         [ForeignKey(nameof(StoreId))]
         public Store Store { get; set; }
     }
