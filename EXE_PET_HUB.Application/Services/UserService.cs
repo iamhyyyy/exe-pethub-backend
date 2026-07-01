@@ -55,9 +55,9 @@ namespace EXE_PET_HUB.Application.Services
     
             return dto;
         }
-        public async Task<ResponeUserDto> UpdateAsync(UpdateUserDto dto)
+        public async Task<ResponeUserDto> UpdateAsync(Guid id, UpdateUserDto dto, String? imageUrl)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
 
             if (user == null)
                 throw new Exception("User not found");
@@ -67,6 +67,12 @@ namespace EXE_PET_HUB.Application.Services
             var oldLastName = user.LastName;
 
             _mapper.Map(dto, user);
+
+            if (imageUrl != null)
+            {
+                user.ImageUrl = imageUrl;
+            }
+
             user.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
             _unitOfWork.Repository<User>().Update(user);

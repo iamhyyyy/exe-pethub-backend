@@ -19,7 +19,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Species { get; set; } = null!;
         public string? Color { get; set; }
         public DateOnly? DateOfBirth { get; set; }
-        public string? ImageUrl { get; set; }
+        //public string? ImageUrl { get; set; }
     }
 
     public class UpdatePetDto
@@ -29,6 +29,6 @@ namespace EXE_PET_HUB.Application.DTOs
         public string Species { get; set; } = null!;
         public string? Color { get; set; }
         public DateOnly? DateOfBirth { get; set; }
-        public string? ImageUrl { get; set; }
+        //public string? ImageUrl { get; set; }
     }
 }

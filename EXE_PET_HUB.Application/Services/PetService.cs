@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Domain.Entities;
+using EXE_PET_HUB.Domain.Entities;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.DTOs;
 using AutoMapper;
@@ -47,10 +47,14 @@ namespace EXE_PET_HUB.Application.Services
             return pets.Count;
         }
 
-        public async Task<PetDto> CreateAsync(CreatePetDto dto)
+        public async Task<PetDto> CreateAsync(CreatePetDto dto, String? imageUrl)
         {
             var pet = _mapper.Map<Pet>(dto);
             pet.Id = Guid.NewGuid().ToString();
+            if (imageUrl != null)
+            {
+                pet.ImageUrl = imageUrl;
+            }
             var storeId = _currentUser.GetStoreId();
             await _unitOfWork.PetRepository.AddAsyncByStoreId(storeId!, pet);
             await _unitOfWork.CompleteAsync();
@@ -58,12 +62,16 @@ namespace EXE_PET_HUB.Application.Services
             return _mapper.Map<PetDto>(pet);
         }
 
-        public async Task<bool> Update(string id, UpdatePetDto dto)
+        public async Task<bool> Update(string id, UpdatePetDto dto, String? imageUrl)
         {
             var pet = await _unitOfWork.PetRepository.GetByIdAsync(id);
             if (pet == null) return false;
             
             _mapper.Map(dto, pet);
+            if (imageUrl != null)
+            {
+                pet.ImageUrl = imageUrl;
+            }
             var storeId = _currentUser.GetStoreId();
             _unitOfWork.PetRepository.UpdateByStoreId(storeId!, pet);
             await _unitOfWork.CompleteAsync();

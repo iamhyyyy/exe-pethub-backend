@@ -1,9 +1,7 @@
-
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace EXE_PET_HUB.API.Controllers
 {
@@ -12,10 +10,12 @@ namespace EXE_PET_HUB.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ICloudinaryService cloudinaryService)
         {
             _userService = userService;
+            _cloudinaryService = cloudinaryService;
         }
 
         [HttpGet("users")]
@@ -25,6 +25,7 @@ namespace EXE_PET_HUB.API.Controllers
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
+
         [HttpGet("user/{id}")]
         [Authorize]
         public async Task<ActionResult<UserDto>> GetById(Guid id)
@@ -34,14 +35,19 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Cập nhật profile. Gửi multipart/form-data gồm các field + file avatar (tùy chọn).
+        /// </summary>
         [HttpPut("user/{id}")]
         [Authorize]
-        public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateUserDto dto, IFormFile? file)
         {
-            if (id != dto.Id)
-                return BadRequest("Id mismatch");
+            string? imageUrl = null;
+            if (file != null)
+                imageUrl = await _cloudinaryService.UploadImageAsync(file, "PetHubManagement/avatars");
 
-            var result = await _userService.UpdateAsync(dto);
+            var result = await _userService.UpdateAsync(id, dto, imageUrl);
             return Ok(result);
         }
 
@@ -57,4 +63,4 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(users);
         }
     }
-}
+}

@@ -1,4 +1,3 @@
-
 using EXE_PET_HUB.Application.DTOs;
 using EXE_PET_HUB.Application.Interfaces;
 using EXE_PET_HUB.Application.Services;
@@ -12,10 +11,12 @@ namespace EXE_PET_HUB.API.Controllers
     public class PetController : ControllerBase
     {
         private readonly PetService _petService;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public PetController(PetService petService)
+        public PetController(PetService petService, ICloudinaryService cloudinaryService)
         {
             _petService = petService;
+            _cloudinaryService = cloudinaryService;
         }
 
         [HttpGet("pets")]
@@ -51,23 +52,37 @@ namespace EXE_PET_HUB.API.Controllers
             return Ok(count);
         }
 
+        /// <summary>
+        /// Tạo pet mới. Gửi multipart/form-data gồm các field + file ảnh (tùy chọn).
+        /// </summary>
         [HttpPost("pet")]
         [Authorize(Roles = "manager")]
-        public async Task<ActionResult<PetDto>> Create(CreatePetDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<PetDto>> Create([FromForm] CreatePetDto dto, IFormFile? file)
         {
-            var pet = await _petService.CreateAsync(dto);
+            string? imageUrl = null;
+            if (file != null)
+                imageUrl = await _cloudinaryService.UploadImageAsync(file, "PetHubManagement/pets");
+
+            var pet = await _petService.CreateAsync(dto, imageUrl);
             return CreatedAtAction(nameof(GetById), new { id = pet.Id }, pet);
         }
 
+        /// <summary>
+        /// Cập nhật pet. Gửi multipart/form-data gồm các field + file ảnh mới (tùy chọn).
+        /// </summary>
         [HttpPatch("pet/{id}")]
         [Authorize]
-        public async Task<ActionResult> Update(string id, UpdatePetDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult> Update(string id, [FromForm] UpdatePetDto dto, IFormFile? file)
         {
-            var pet = await _petService.Update(id, dto);
-            if (!pet) return NotFound();
+            string? imageUrl = null;
+            if (file != null)
+                imageUrl = await _cloudinaryService.UploadImageAsync(file, "PetHubManagement/pets");
+
+            var result = await _petService.Update(id, dto, imageUrl);
+            if (!result) return NotFound();
             return NoContent();
         }
-
     }
-
 }

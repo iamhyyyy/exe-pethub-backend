@@ -25,13 +25,15 @@ namespace EXE_PET_HUB.Application.DTOs
         public string? LastName { get; set; }
         public string? UserName { get; set; }
         public PlanType Plan { get; set; }
+        public string? ImageUrl { get; set; }
+
     }
 
     public class UpdateUserDto
     {
-        public Guid Id { get; set; }
+        //public Guid Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string? ImageUrl { get; set; }
+        //public string? ImageUrl { get; set; }
     }
 }

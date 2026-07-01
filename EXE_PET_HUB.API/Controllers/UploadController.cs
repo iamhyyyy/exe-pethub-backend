@@ -20,20 +20,12 @@ namespace EXE_PET_HUB.API.Controllers
             _cloudinaryService = cloudinaryService;
         }
 
-        /// <summary>
-        /// Upload ảnh thú cưng.
-        /// POST /api/upload/pet
-        /// </summary>
         [HttpPost("pet")]
         public async Task<IActionResult> UploadPetImage(IFormFile file)
         {
             return await UploadImage(file, "PetHubManagement/pets");
         }
 
-        /// <summary>
-        /// Upload ảnh sản phẩm/dịch vụ (Item).
-        /// POST /api/upload/item
-        /// </summary>
         [HttpPost("item")]
         [Authorize(Roles = "manager")]
         public async Task<IActionResult> UploadItemImage(IFormFile file)
@@ -41,17 +33,11 @@ namespace EXE_PET_HUB.API.Controllers
             return await UploadImage(file, "PetHubManagement/items");
         }
 
-        /// <summary>
-        /// Upload avatar người dùng.
-        /// POST /api/upload/avatar
-        /// </summary>
         [HttpPost("avatar")]
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
             return await UploadImage(file, "PetHubManagement/avatars");
         }
-
-        // ─── Helper ──────────────────────────────────────────────────────────────
 
         private async Task<IActionResult> UploadImage(IFormFile file, string folder)
         {
