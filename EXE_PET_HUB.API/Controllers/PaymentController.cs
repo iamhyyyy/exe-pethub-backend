@@ -63,12 +63,9 @@ namespace EXE_PET_HUB.API.Controllers
                 });
 
             if (cancel == "true")
-                return Ok(new
-                {
-                    status = "cancelled",
-                    message = "Người dùng đã hủy thanh toán.",
-                    orderCode
-                });
+                return Redirect(
+            $"https://www.pethub.io.vn"
+        );
 
             return Ok(new
             {

@@ -1,4 +1,4 @@
-﻿using EXE_PET_HUB.Domain.Enums;
+using EXE_PET_HUB.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
