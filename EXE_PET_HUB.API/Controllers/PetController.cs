@@ -56,7 +56,7 @@ namespace EXE_PET_HUB.API.Controllers
         /// Tạo pet mới. Gửi multipart/form-data gồm các field + file ảnh (tùy chọn).
         /// </summary>
         [HttpPost("pet")]
-        [Authorize(Roles = "manager")]
+        [Authorize]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<PetDto>> Create([FromForm] CreatePetDto dto, IFormFile? file)
         {
