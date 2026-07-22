@@ -25,7 +25,9 @@ namespace EXE_PET_HUB.API.Controllers
         public async Task<ActionResult<List<ItemDto>>> GetAll()
         {
             var storeId = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
-            var items = await _itemService.GetAllAsync(storeId);
+            // Manager thấy tất cả item (kể cả locked), Customer chỉ thấy item active
+            var isManager = User.IsInRole("manager");
+            var items = await _itemService.GetAllAsync(storeId, includeInactive: isManager);
             return Ok(items);
         }
 
@@ -71,6 +73,27 @@ namespace EXE_PET_HUB.API.Controllers
             var updated = await _itemService.UpdateAsync(storeId, id, dto, ImageUrl);
             if (!updated) return NotFound();
             return NoContent();
+        }
+
+
+        [HttpPatch("{id}/lock")]
+        [Authorize(Roles = "manager")]
+        public async Task<ActionResult> Lock(string id)
+        {
+            var storeId = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var result = await _itemService.LockAsync(storeId, id);
+            if (!result) return NotFound(new { message = "Item không tồn tại hoặc không thuộc store của bạn." });
+            return Ok(new { message = "Item đã được khóa thành công." });
+        }
+
+        [HttpPatch("{id}/unlock")]
+        [Authorize(Roles = "manager")]
+        public async Task<ActionResult> Unlock(string id)
+        {
+            var storeId = User.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+            var result = await _itemService.UnlockAsync(storeId, id);
+            if (!result) return NotFound(new { message = "Item không tồn tại hoặc không thuộc store của bạn." });
+            return Ok(new { message = "Item đã được mở khóa thành công." });
         }
     }
 }

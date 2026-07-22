@@ -1,4 +1,4 @@
-using EXE_PET_HUB.Application.DTOs.Auth;
+﻿using EXE_PET_HUB.Application.DTOs.Auth;
 using EXE_PET_HUB.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace EXE_PET_HUB.API.Controllers
         {
             var user = await _authService.LoginAsync(request);
             if (user == null)
-                return Unauthorized(new { message = "Wrong email/password, or account not confirmed yet." });
+                return Unauthorized(new { message = "Sai email/password, hoặc tài khoản chưa kích hoạt." });
 
             return Ok(user);
         }
@@ -29,7 +29,7 @@ namespace EXE_PET_HUB.API.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            return Ok(new { message = "Logout Successfully!" });
+            return Ok(new { message = "Đăng Xuất Thành Công!" });
         }
 
         [HttpPost("register")]
@@ -68,7 +68,7 @@ namespace EXE_PET_HUB.API.Controllers
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
-                return BadRequest(new { message = "Invalid confirmation link." });
+                return BadRequest(new { message = "Liên Kết Không Hợp Lệ." });
 
             var (success, message) = await _authService.ConfirmEmailAsync(userId, token);
 

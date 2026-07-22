@@ -23,6 +23,7 @@ namespace EXE_PET_HUB.Domain.Entities
 
         [Column(TypeName = "varchar(500)")]
         public string? ImageUrl { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [ForeignKey(nameof(StoreId))]
         public Store Store { get; set; }

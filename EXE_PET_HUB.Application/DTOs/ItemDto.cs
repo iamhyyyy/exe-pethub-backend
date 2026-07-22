@@ -17,6 +17,7 @@ namespace EXE_PET_HUB.Application.DTOs
         public decimal Price { get; set; }
         public ItemType Type { get; set; }
         public string? ImageUrl { get; set; }
+        public bool IsActive { get; set; }
     }
     // DTO để Frontend gửi lên khi tạo mới (không cần Id)
     public class CreateItemDto

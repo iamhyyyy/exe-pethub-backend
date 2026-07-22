@@ -20,9 +20,23 @@ namespace EXE_PET_HUB.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<List<ItemDto>> GetAllAsync(string storeId)
+
+        /// <summary>
+        /// Lấy danh sách item theo storeId.
+        /// Manager (includeInactive = true) thấy tất cả kể cả item bị khóa.
+        /// Customer (includeInactive = false) chỉ thấy item đang active.
+        /// </summary>
+        public async Task<List<ItemDto>> GetAllAsync(string storeId, bool includeInactive = false)
         {
-            var items = await _unitOfWork.ItemRepository.GetAllAsyncByStoreId(storeId);
+            List<Item> items;
+            if (includeInactive)
+            {
+                items = await _unitOfWork.ItemRepository.GetAllAsyncByStoreId(storeId);
+            }
+            else
+            {
+                items = await _unitOfWork.ItemRepository.FindAsyncByStoreId(storeId, x => x.IsActive);
+            }
             return _mapper.Map<List<ItemDto>>(items);
         }
 
@@ -53,6 +67,26 @@ namespace EXE_PET_HUB.Application.Services
             {
                 item.ImageUrl = imageurl;
             }
+            _unitOfWork.ItemRepository.UpdateByStoreId(storeId, item);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
+
+        public async Task<bool> LockAsync(string storeId, string id)
+        {
+            var item = await _unitOfWork.ItemRepository.GetByIdAsyncAndByStoreId(id, storeId);
+            if (item == null) return false;
+            item.IsActive = false;
+            _unitOfWork.ItemRepository.UpdateByStoreId(storeId, item);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
+
+        public async Task<bool> UnlockAsync(string storeId, string id)
+        {
+            var item = await _unitOfWork.ItemRepository.GetByIdAsyncAndByStoreId(id, storeId);
+            if (item == null) return false;
+            item.IsActive = true;
             _unitOfWork.ItemRepository.UpdateByStoreId(storeId, item);
             await _unitOfWork.CompleteAsync();
             return true;
