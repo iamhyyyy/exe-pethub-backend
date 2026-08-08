@@ -23,21 +23,21 @@ namespace EXE_PET_HUB.Infrastructure.Data
                 await SeedRolesAsync(roleManager);
                 await SeedUsersAsync(userManager);
                 await SeedStoresAsync(context);
-                await SeedStoreCustomersAsync(context);
-                await SeedItemsAsync(context);
+                //await SeedStoreCustomersAsync(context);
+                //await SeedItemsAsync(context);
                 Console.WriteLine("Done Identity, Store & Items");
 
                 //for service
-                await SeedPetsAsync(context);
+                //await SeedPetsAsync(context);
                 Console.WriteLine("Done Pets");
-                await SeedAppointmentsAsync(context);
-                await SeedAppointmentRemindersAsync(context);
-                await SeedMedicalRecordsAsync(context);
+                //await SeedAppointmentsAsync(context);
+                //await SeedAppointmentRemindersAsync(context);
+                //await SeedMedicalRecordsAsync(context);
                 Console.WriteLine("Done Medical Process");
 
                 //for payment
-                await SeedInvoicesAsync(context);
-                await SeedStorePackagePaymentsAsync(context);
+                //await SeedInvoicesAsync(context);
+                //await SeedStorePackagePaymentsAsync(context);
                 Console.WriteLine("All Seed Completed!");
             }
             catch (Exception ex)
