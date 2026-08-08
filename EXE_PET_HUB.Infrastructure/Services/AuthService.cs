@@ -205,37 +205,37 @@ namespace EXE_PET_HUB.Infrastructure.Services
             var baseUrl = _configuration["AppSettings:BaseUrl"];
             var directLink = $"{baseUrl}/auth/login";
             var emailSent = true;
-            try
-            {
-                var subject = "[PetHub] Tài khoản Manager của bạn đã được tạo 🐾";
-                var body = $"""
-                    <h2>Xin chào {user.UserName}!</h2>
-                    <p>Tài khoản Manager của bạn đã được tạo thành công trên <strong>PetHub</strong>.</p>
-                    <hr/>
-                    <p><strong>Thông tin đăng nhập:</strong></p>
-                    <p>Email: {request.Email}</p>
-                    <p>Password: {request.Password}</p>
-                    <hr/>
-                    <p><strong>Thông tin cửa hàng:</strong></p>
-                    <p>Tên cửa hàng: {store.Name}</p>
-                    <p>Store ID: {store.Id}</p>
-                    <p>Địa chỉ: {store.Address}</p>
-                    <p><em>Vui lòng đổi mật khẩu sau khi đăng nhập lần đầu.</em></p>
-                    <br/>
-                    <a href="{directLink}"
-                       style="background:#4CAF50;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;">
-                      Đăng nhập ngay
-                    </a>
-                    <br/><br/>
-                    <p>Sincerely,<br/>PetHub Team 🐶🐱</p>
-                    """;
+            //try
+            //{
+            //    var subject = "[PetHub] Tài khoản Manager của bạn đã được tạo 🐾";
+            //    var body = $"""
+            //        <h2>Xin chào {user.UserName}!</h2>
+            //        <p>Tài khoản Manager của bạn đã được tạo thành công trên <strong>PetHub</strong>.</p>
+            //        <hr/>
+            //        <p><strong>Thông tin đăng nhập:</strong></p>
+            //        <p>Email: {request.Email}</p>
+            //        <p>Password: {request.Password}</p>
+            //        <hr/>
+            //        <p><strong>Thông tin cửa hàng:</strong></p>
+            //        <p>Tên cửa hàng: {store.Name}</p>
+            //        <p>Store ID: {store.Id}</p>
+            //        <p>Địa chỉ: {store.Address}</p>
+            //        <p><em>Vui lòng đổi mật khẩu sau khi đăng nhập lần đầu.</em></p>
+            //        <br/>
+            //        <a href="{directLink}"
+            //           style="background:#4CAF50;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;">
+            //          Đăng nhập ngay
+            //        </a>
+            //        <br/><br/>
+            //        <p>Sincerely,<br/>PetHub Team 🐶🐱</p>
+            //        """;
 
-                await _emailService.SendEmailAsync(user.Email, subject, body);
-            }
-            catch (Exception)
-            {
-                emailSent = false;
-            }
+            //    await _emailService.SendEmailAsync(user.Email, subject, body);
+            //}
+            //catch (Exception)
+            //{
+            //    emailSent = false;
+            //}
 
             var message = emailSent
                 ? $"Đã tạo Manager và Store '{store.Name}' thành công! Store ID: {store.Id}"
